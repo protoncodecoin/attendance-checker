@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "696004120917",
+    "project_id": "attendance-system-d4f1b",
+    "storage_bucket": "attendance-system-d4f1b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:696004120917:android:96471487a31d4d029b9fdc",
+        "android_client_info": {
+          "package_name": "com.example.attendance_system"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCn_MLxNKbNqrKRlv-V76YJmexqXtbdP_w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
