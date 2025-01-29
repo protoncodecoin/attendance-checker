@@ -67,7 +67,6 @@ class DbHelper {
     return docRef;
   }
 
-
   /// Get Lecture (Class)
   // Get Lecturer
   static Future<Map<String, dynamic>> getLecture(String lectureId) {
@@ -81,4 +80,62 @@ class DbHelper {
   }
 
   /// Save Lecture
+  static Future<void> saveLecture(Lecture course) {
+    final docRef = _db.collection(collectionLecture).doc();
+    course.id = docRef.id;
+
+    return docRef.set(course.toJson());
+  }
+
+  /// Add student to lecture
+ static Future<void> assignStudentToLecture(
+      String studentId, String lectureId) async {
+    DocumentReference lectureRef =
+        _db.collection(collectionLecture).doc(lectureId);
+    DocumentReference studentRef =
+        _db.collection(collectionStudent).doc(studentId);
+
+    // Update lecture document
+    await lectureRef.update(
+      {
+        "studentIds": FieldValue.arrayUnion(
+          [studentId],
+        ),
+      },
+    );
+
+    // Update student document
+    await studentRef.update(
+      {
+        "lectureIds": FieldValue.arrayUnion(
+          [lectureId],
+        ),
+      },
+    );
+  }
+
+  // Remove student from Lecture
+static  Future<void> removeStudentFromLecture(
+      String studentId, String lectureId) async {
+    DocumentReference studentRef =
+        _db.collection(collectionStudent).doc(studentId);
+    DocumentReference lectureRef =
+        _db.collection(collectionLecture).doc(lectureId);
+
+    /// Update lecture document
+    await lectureRef.update(
+      {
+        "studentIds": FieldValue.arrayRemove([studentId]),
+      },
+    );
+
+    // update student document
+    await studentRef.update(
+      {
+        "lectureIds": FieldValue.arrayRemove(
+          [lectureId],
+        ),
+      },
+    );
+  }
 }

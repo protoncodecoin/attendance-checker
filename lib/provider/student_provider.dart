@@ -6,21 +6,14 @@ import '../models/student.dart';
 class StudentProvider with ChangeNotifier {
   List<Student> studentList = [];
 
+  String enrollmentStatus = "enrolled";
+
   /// Add new student to the Collection student
   Future<void> addNewStudent(Student student) {
     return DbHelper.addStudent(student);
   }
 
-  // /// Retrieve all students
-  // getAllStudents() {
-  //   DbHelper.getAllStudents().listen((snapshot) {
-  //     studentList = List.generate(snapshot.docs.length,
-  //         (index) => Student.fromJson(snapshot.docs[index].data()));
-  //     notifyListeners();
-  //   });
-  // }
-
-  /// Retrive one student
+  /// Retrieve one student
   Future<Map<String, dynamic>> getStudent(String studentId) {
     final data = DbHelper.getStudent(studentId);
     return data;
@@ -40,4 +33,5 @@ class StudentProvider with ChangeNotifier {
 
     notifyListeners();
   }
+
 }

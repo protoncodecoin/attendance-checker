@@ -241,20 +241,26 @@ class _StudentDetailState extends State<StudentDetail> {
             fullname: fullname,
             level: level,
             programeOfStudy: programme,
+          lectureIds: [],
             email: email,);
 
         Provider.of<StudentProvider>(context, listen: false)
             .addNewStudent(newStudent);
 
         _msg = "Data saved";
+        showMsg(context, _msg);
+
+        Navigator.pop(context);
+        EasyLoading.dismiss();
+
+
       } catch (e) {
         // catch error
         setState(() {
           _msg = "Failed to save data";
+          EasyLoading.dismiss();
+          showMsg(context, _msg);
         });
-      } finally {
-        EasyLoading.dismiss();
-        showMsg(context, _msg);
       }
     }
   }

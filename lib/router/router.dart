@@ -163,7 +163,7 @@ final goRouter = GoRouter(
                     path: AddStudentToLecture.routeName,
                     builder: (context, state) {
                       final String extra = GoRouterState.of(context).extra! as String;
-                      return AddStudentToLecture(classId: extra);
+                      return AddStudentToLecture(courseId: extra);
                     })
               ],
             ),

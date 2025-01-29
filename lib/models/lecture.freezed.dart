@@ -22,10 +22,10 @@ Lecture _$LectureFromJson(Map<String, dynamic> json) {
 mixin _$Lecture {
   String? get id => throw _privateConstructorUsedError;
   set id(String? value) => throw _privateConstructorUsedError;
-  bool? get activeClass => throw _privateConstructorUsedError;
-  set activeClass(bool? value) => throw _privateConstructorUsedError;
-  bool? get hasClassEnded => throw _privateConstructorUsedError;
-  set hasClassEnded(bool? value) => throw _privateConstructorUsedError;
+  dynamic get activeClass => throw _privateConstructorUsedError;
+  set activeClass(dynamic value) => throw _privateConstructorUsedError;
+  dynamic get hasClassEnded => throw _privateConstructorUsedError;
+  set hasClassEnded(dynamic value) => throw _privateConstructorUsedError;
   String get courseTitle => throw _privateConstructorUsedError;
   set courseTitle(String value) => throw _privateConstructorUsedError;
   int get totalStudents => throw _privateConstructorUsedError;
@@ -38,10 +38,10 @@ mixin _$Lecture {
   set time(String value) => throw _privateConstructorUsedError;
   String get classRoom => throw _privateConstructorUsedError;
   set classRoom(String value) => throw _privateConstructorUsedError;
-  Lecturer get lecturer => throw _privateConstructorUsedError;
-  set lecturer(Lecturer value) => throw _privateConstructorUsedError;
-  List<Student> get students => throw _privateConstructorUsedError;
-  set students(List<Student> value) => throw _privateConstructorUsedError;
+  String get lecturerId => throw _privateConstructorUsedError;
+  set lecturerId(String value) => throw _privateConstructorUsedError;
+  List<String> get studentIds => throw _privateConstructorUsedError;
+  set studentIds(List<String> value) => throw _privateConstructorUsedError;
 
   /// Serializes this Lecture to a JSON map.
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -59,18 +59,16 @@ abstract class $LectureCopyWith<$Res> {
   @useResult
   $Res call(
       {String? id,
-      bool? activeClass,
-      bool? hasClassEnded,
+      dynamic activeClass,
+      dynamic hasClassEnded,
       String courseTitle,
       int totalStudents,
       String lecturerName,
       String date,
       String time,
       String classRoom,
-      Lecturer lecturer,
-      List<Student> students});
-
-  $LecturerCopyWith<$Res> get lecturer;
+      String lecturerId,
+      List<String> studentIds});
 }
 
 /// @nodoc
@@ -97,8 +95,8 @@ class _$LectureCopyWithImpl<$Res, $Val extends Lecture>
     Object? date = null,
     Object? time = null,
     Object? classRoom = null,
-    Object? lecturer = null,
-    Object? students = null,
+    Object? lecturerId = null,
+    Object? studentIds = null,
   }) {
     return _then(_value.copyWith(
       id: freezed == id
@@ -108,11 +106,11 @@ class _$LectureCopyWithImpl<$Res, $Val extends Lecture>
       activeClass: freezed == activeClass
           ? _value.activeClass
           : activeClass // ignore: cast_nullable_to_non_nullable
-              as bool?,
+              as dynamic,
       hasClassEnded: freezed == hasClassEnded
           ? _value.hasClassEnded
           : hasClassEnded // ignore: cast_nullable_to_non_nullable
-              as bool?,
+              as dynamic,
       courseTitle: null == courseTitle
           ? _value.courseTitle
           : courseTitle // ignore: cast_nullable_to_non_nullable
@@ -137,25 +135,15 @@ class _$LectureCopyWithImpl<$Res, $Val extends Lecture>
           ? _value.classRoom
           : classRoom // ignore: cast_nullable_to_non_nullable
               as String,
-      lecturer: null == lecturer
-          ? _value.lecturer
-          : lecturer // ignore: cast_nullable_to_non_nullable
-              as Lecturer,
-      students: null == students
-          ? _value.students
-          : students // ignore: cast_nullable_to_non_nullable
-              as List<Student>,
+      lecturerId: null == lecturerId
+          ? _value.lecturerId
+          : lecturerId // ignore: cast_nullable_to_non_nullable
+              as String,
+      studentIds: null == studentIds
+          ? _value.studentIds
+          : studentIds // ignore: cast_nullable_to_non_nullable
+              as List<String>,
     ) as $Val);
-  }
-
-  /// Create a copy of Lecture
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $LecturerCopyWith<$Res> get lecturer {
-    return $LecturerCopyWith<$Res>(_value.lecturer, (value) {
-      return _then(_value.copyWith(lecturer: value) as $Val);
-    });
   }
 }
 
@@ -168,19 +156,16 @@ abstract class _$$LectureImplCopyWith<$Res> implements $LectureCopyWith<$Res> {
   @useResult
   $Res call(
       {String? id,
-      bool? activeClass,
-      bool? hasClassEnded,
+      dynamic activeClass,
+      dynamic hasClassEnded,
       String courseTitle,
       int totalStudents,
       String lecturerName,
       String date,
       String time,
       String classRoom,
-      Lecturer lecturer,
-      List<Student> students});
-
-  @override
-  $LecturerCopyWith<$Res> get lecturer;
+      String lecturerId,
+      List<String> studentIds});
 }
 
 /// @nodoc
@@ -205,22 +190,17 @@ class __$$LectureImplCopyWithImpl<$Res>
     Object? date = null,
     Object? time = null,
     Object? classRoom = null,
-    Object? lecturer = null,
-    Object? students = null,
+    Object? lecturerId = null,
+    Object? studentIds = null,
   }) {
     return _then(_$LectureImpl(
       id: freezed == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String?,
-      activeClass: freezed == activeClass
-          ? _value.activeClass
-          : activeClass // ignore: cast_nullable_to_non_nullable
-              as bool?,
-      hasClassEnded: freezed == hasClassEnded
-          ? _value.hasClassEnded
-          : hasClassEnded // ignore: cast_nullable_to_non_nullable
-              as bool?,
+      activeClass: freezed == activeClass ? _value.activeClass! : activeClass,
+      hasClassEnded:
+          freezed == hasClassEnded ? _value.hasClassEnded! : hasClassEnded,
       courseTitle: null == courseTitle
           ? _value.courseTitle
           : courseTitle // ignore: cast_nullable_to_non_nullable
@@ -245,14 +225,14 @@ class __$$LectureImplCopyWithImpl<$Res>
           ? _value.classRoom
           : classRoom // ignore: cast_nullable_to_non_nullable
               as String,
-      lecturer: null == lecturer
-          ? _value.lecturer
-          : lecturer // ignore: cast_nullable_to_non_nullable
-              as Lecturer,
-      students: null == students
-          ? _value.students
-          : students // ignore: cast_nullable_to_non_nullable
-              as List<Student>,
+      lecturerId: null == lecturerId
+          ? _value.lecturerId
+          : lecturerId // ignore: cast_nullable_to_non_nullable
+              as String,
+      studentIds: null == studentIds
+          ? _value.studentIds
+          : studentIds // ignore: cast_nullable_to_non_nullable
+              as List<String>,
     ));
   }
 }
@@ -262,16 +242,16 @@ class __$$LectureImplCopyWithImpl<$Res>
 class _$LectureImpl with DiagnosticableTreeMixin implements _Lecture {
   _$LectureImpl(
       {this.id,
-      this.activeClass,
-      this.hasClassEnded,
+      this.activeClass = false,
+      this.hasClassEnded = false,
       required this.courseTitle,
       required this.totalStudents,
       required this.lecturerName,
       required this.date,
       required this.time,
       required this.classRoom,
-      required this.lecturer,
-      required this.students});
+      required this.lecturerId,
+      required this.studentIds});
 
   factory _$LectureImpl.fromJson(Map<String, dynamic> json) =>
       _$$LectureImplFromJson(json);
@@ -279,9 +259,11 @@ class _$LectureImpl with DiagnosticableTreeMixin implements _Lecture {
   @override
   String? id;
   @override
-  bool? activeClass;
+  @JsonKey()
+  dynamic activeClass;
   @override
-  bool? hasClassEnded;
+  @JsonKey()
+  dynamic hasClassEnded;
   @override
   String courseTitle;
   @override
@@ -295,13 +277,13 @@ class _$LectureImpl with DiagnosticableTreeMixin implements _Lecture {
   @override
   String classRoom;
   @override
-  Lecturer lecturer;
+  String lecturerId;
   @override
-  List<Student> students;
+  List<String> studentIds;
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'Lecture(id: $id, activeClass: $activeClass, hasClassEnded: $hasClassEnded, courseTitle: $courseTitle, totalStudents: $totalStudents, lecturerName: $lecturerName, date: $date, time: $time, classRoom: $classRoom, lecturer: $lecturer, students: $students)';
+    return 'Lecture(id: $id, activeClass: $activeClass, hasClassEnded: $hasClassEnded, courseTitle: $courseTitle, totalStudents: $totalStudents, lecturerName: $lecturerName, date: $date, time: $time, classRoom: $classRoom, lecturerId: $lecturerId, studentIds: $studentIds)';
   }
 
   @override
@@ -318,8 +300,8 @@ class _$LectureImpl with DiagnosticableTreeMixin implements _Lecture {
       ..add(DiagnosticsProperty('date', date))
       ..add(DiagnosticsProperty('time', time))
       ..add(DiagnosticsProperty('classRoom', classRoom))
-      ..add(DiagnosticsProperty('lecturer', lecturer))
-      ..add(DiagnosticsProperty('students', students));
+      ..add(DiagnosticsProperty('lecturerId', lecturerId))
+      ..add(DiagnosticsProperty('studentIds', studentIds));
   }
 
   /// Create a copy of Lecture
@@ -341,16 +323,16 @@ class _$LectureImpl with DiagnosticableTreeMixin implements _Lecture {
 abstract class _Lecture implements Lecture {
   factory _Lecture(
       {String? id,
-      bool? activeClass,
-      bool? hasClassEnded,
+      dynamic activeClass,
+      dynamic hasClassEnded,
       required String courseTitle,
       required int totalStudents,
       required String lecturerName,
       required String date,
       required String time,
       required String classRoom,
-      required Lecturer lecturer,
-      required List<Student> students}) = _$LectureImpl;
+      required String lecturerId,
+      required List<String> studentIds}) = _$LectureImpl;
 
   factory _Lecture.fromJson(Map<String, dynamic> json) = _$LectureImpl.fromJson;
 
@@ -358,11 +340,11 @@ abstract class _Lecture implements Lecture {
   String? get id;
   set id(String? value);
   @override
-  bool? get activeClass;
-  set activeClass(bool? value);
+  dynamic get activeClass;
+  set activeClass(dynamic value);
   @override
-  bool? get hasClassEnded;
-  set hasClassEnded(bool? value);
+  dynamic get hasClassEnded;
+  set hasClassEnded(dynamic value);
   @override
   String get courseTitle;
   set courseTitle(String value);
@@ -382,11 +364,11 @@ abstract class _Lecture implements Lecture {
   String get classRoom;
   set classRoom(String value);
   @override
-  Lecturer get lecturer;
-  set lecturer(Lecturer value);
+  String get lecturerId;
+  set lecturerId(String value);
   @override
-  List<Student> get students;
-  set students(List<Student> value);
+  List<String> get studentIds;
+  set studentIds(List<String> value);
 
   /// Create a copy of Lecture
   /// with the given fields replaced by the non-null parameter values.

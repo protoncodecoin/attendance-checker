@@ -8,6 +8,7 @@ const collectionLecturer = "Lecturer";
 
 @unfreezed
 class Lecturer with _$Lecturer {
+
   factory Lecturer({
     String? id,
     required String fullname,

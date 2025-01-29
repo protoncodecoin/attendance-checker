@@ -1,68 +1,31 @@
-import 'package:attendance_system/models/image_model.dart';
+import 'package:flutter/foundation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+
+part 'student.freezed.dart';
+part 'student.g.dart';
 
 const collectionStudent = "Students";
 const String labelStudentId = "id";
 const String labelFullname = "fullname";
 const String labelLevel = "level";
-const String labelProgrammeOfStudy = "programmeOfStudy";
+const String labelProgrammeOfStudy = "programeOfStudy";
+const String classIds = "lectureIds";
 
 const String labelEmail = "email";
 
-class Student {
-  String? id;
-  final String fullname;
-  final String level;
-  final String programeOfStudy;
-  final String email;
-  // final ImageModel image;
+@unfreezed
+class Student with _$Student {
 
-  Student({
-    this.id,
-    required this.fullname,
-    required this.level,
-    required this.programeOfStudy,
-    required this.email,
-    // required this.image,
-  });
+  factory Student({
+    String? id,
+    required String fullname,
+    required String level,
+    required String programeOfStudy,
+    required String email,
+    @Default(List<String>) lectureIds,
+}) = _Student;
 
-  @override
-  bool operator ==(Object other) {
-    return other is Student && other.id == id;
-  }
-
-  @override
-  int get hashCode => Object.hash(id, email);
-
-  @override
-  String toString() {
-    return 'Full Name: $fullname Email: $email';
-  }
-
-  Map<String, dynamic> toJson() {
-    return <String, dynamic>{
-      'id': id,
-      'fullname': fullname,
-      'level': level,
-      'programmeOfStudy': programeOfStudy,
-      'email': email,
-    };
-  }
-
-  factory Student.fromJson(Map<String, dynamic> map) => Student(
-      fullname: map[labelFullname],
-      level: map[labelLevel],
-      programeOfStudy: map[labelProgrammeOfStudy],
-      email: map[labelEmail]);
-
-// email "jackson@test.com"
-// (string)
-// fullname "Micheal Jackson"
-// (string)
-// id "sZKBLe2ZLqLX8MZaO2Il"
-// (string)
-// level "400"
-// (string)
-// programmeOfStudy "Computer Science"
+  factory Student.fromJson(Map<String, dynamic> json) => _$StudentFromJson(json);
 }
 
 Student student = Student(
@@ -71,6 +34,8 @@ Student student = Student(
   level: "400",
   programeOfStudy: "Computer Sciencew",
   email: "james@example.com",
+  lectureIds: [],
+
 );
 
 List<Student> students = [
@@ -79,29 +44,35 @@ List<Student> students = [
       fullname: "James Peter",
       level: "400",
       email: "peter@example.com",
+      lectureIds: [],
       programeOfStudy: "Computer Science"),
+
   Student(
       id: '3',
       fullname: "Paul Peter",
       level: "400",
       email: "paul@example.com",
+      lectureIds: [],
       programeOfStudy: "Computer Science"),
   Student(
       id: '4',
       fullname: "Mary Peter",
       level: "400",
       email: "example@example.com",
+      lectureIds: [],
       programeOfStudy: "mary Science"),
   Student(
       id: '5',
       fullname: "Vida Peter",
       level: "400",
       email: "vida@example.com",
+      lectureIds: [],
       programeOfStudy: "Computer Science"),
   Student(
       id: '6',
       fullname: "Robertson Peter",
       level: "400",
       email: "robertson202@example.com",
+      lectureIds: [],
       programeOfStudy: "Computer Science"),
 ];

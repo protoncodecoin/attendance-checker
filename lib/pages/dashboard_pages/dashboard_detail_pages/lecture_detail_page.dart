@@ -1,10 +1,12 @@
 import 'package:attendance_system/pages/dashboard_pages/dashboard_detail_pages/add_student_to_lecture.dart';
+import 'package:attendance_system/provider/lecture_provider.dart';
+import 'package:attendance_system/utility/widget_functions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:attendance_system/provider/lecturer_provider.dart';
-import 'package:attendance_system/utility/functions.dart';
 
 import '../../../api/mock_student_system_data.dart';
 import '../../../models/lecture.dart';
@@ -33,8 +35,12 @@ class _LectureDetailPageState extends State<LectureDetailPage> {
   final TextEditingController _numStudentsController = TextEditingController();
   final TextEditingController _startTimeController = TextEditingController();
   final TextEditingController _dateController = TextEditingController();
-  final String _errMsg = "";
-  Lecturer? selectedLecturer;
+  final TextEditingController _courseClassNumController =
+      TextEditingController();
+  String _errMsg = "";
+  Lecturer? _selectedLecturer;
+  bool hasLoaded = false;
+  String savedLecturerName = "";
 
   @override
   void initState() {
@@ -45,7 +51,8 @@ class _LectureDetailPageState extends State<LectureDetailPage> {
       // initialize form fields to empty stings
       _courseTitleController.text = "";
       _lecturerController.text = "";
-      _numStudentsController.text = "";
+      _numStudentsController.text = "0";
+      _courseClassNumController.text = "";
       _startTimeController.text = _formatTime(TimeOfDay.now());
       _dateController.text = _formatDate(DateTime.now());
     }
@@ -58,6 +65,7 @@ class _LectureDetailPageState extends State<LectureDetailPage> {
     _lecturerController.dispose();
     _numStudentsController.dispose();
     _startTimeController.dispose();
+    _courseClassNumController.dispose();
     _dateController.dispose();
 
     super.dispose();
@@ -142,6 +150,20 @@ class _LectureDetailPageState extends State<LectureDetailPage> {
                       },
                     ),
                   ),
+
+                  hasLoaded ?
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        Text(
+                          "Assigned Lecturer",
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        Text(savedLecturerName),
+                      ],
+                    ),
+                  ) : const SizedBox(),
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -151,6 +173,7 @@ class _LectureDetailPageState extends State<LectureDetailPage> {
                         items: provider.lecturers.map(
                           (item) {
                             return DropdownMenuItem<Lecturer>(
+                              // enabled: hasLoaded,
                               value: item,
                               child: Text(item.fullname),
                             );
@@ -158,10 +181,10 @@ class _LectureDetailPageState extends State<LectureDetailPage> {
                         ).toList(),
                         onChanged: (value) {
                           setState(() {
-                            selectedLecturer = value;
+                            _selectedLecturer = value;
                           });
                         },
-                        value: selectedLecturer,
+                        value: _selectedLecturer,
                         hint: const Text("select a Lecturer for the class"),
                         validator: (value) {
                           if (value == null) {
@@ -173,29 +196,12 @@ class _LectureDetailPageState extends State<LectureDetailPage> {
                     ),
                   ),
                   // Padding(
-                  //   padding: const EdgeInsets.all(8.0),
-                  //   child: TextFormField(
-                  //     controller: _lecturerController,
-                  //     // enabled: false,
-                  //     keyboardType: TextInputType.text,
-                  //     decoration: InputDecoration(
-                  //       filled: true,
-                  //       prefixIcon: Icon(Icons.person_2),
-                  //       labelText: "Lecturer",
-                  //     ),
-                  //     validator: (value) {
-                  //       if (value == null || value.isEmpty) {
-                  //         return "Provide a valid lecture id";
-                  //       }
-                  //       return null;
-                  //     },
-                  //   ),
-                  // ),
+
                   Padding(
                     padding: const EdgeInsets.all(8.0),
                     child: TextFormField(
                       controller: _numStudentsController,
-                      // enabled: false,
+                      // enabled: false;
                       decoration: InputDecoration(
                         filled: true,
                         prefixIcon: Icon(Icons.numbers),
@@ -204,6 +210,25 @@ class _LectureDetailPageState extends State<LectureDetailPage> {
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return "Provide a valid number";
+                        }
+                        return null;
+                      },
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      // enabled: false,
+                      controller: _courseClassNumController,
+                      keyboardType: TextInputType.text,
+                      decoration: InputDecoration(
+                        filled: true,
+                        prefixIcon: Icon(Icons.house),
+                        labelText: "Class Number",
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Provide a valid Class Number";
                         }
                         return null;
                       },
@@ -292,62 +317,78 @@ class _LectureDetailPageState extends State<LectureDetailPage> {
     );
   }
 
-  void _fetchLecture(String lectureId) {
-    Lecture? lecture = getLecture(lectureId);
-    //Lecture? lecture = Provider.of<LecturerProvider>(context, listen: false).getLecture();
+  /// fetch and populate the form fields with the data fetched
+  Future<void> _fetchLecture(String lectureId) async {
+    // Lecture? lecture = getLecture(lectureId);
+    var lecture = await Provider.of<LectureProvider>(context, listen: false)
+        .getClass(lectureId);
 
-    _courseTitleController.text = lecture!.courseTitle;
-    _lecturerController.text = lecture.lecturerName;
-    _numStudentsController.text = lecture.totalStudents.toString();
-    _startTimeController.text = lecture.time;
-    _dateController.text = lecture.date;
+    hasLoaded = true;
+
+    var lecturer = await Provider.of<LecturerProvider>(context, listen: false)
+        .getLecturer(lecture["lecturerId"]);
+
+
+    setState(() {
+      savedLecturerName = lecturer["fullname"];
+    });
+
+    _courseTitleController.text = lecture['courseTitle'];
+    _lecturerController.text = lecture["lecturerName"];
+    _numStudentsController.text = lecture["totalStudents"].toString();
+    _startTimeController.text = lecture["time"];
+    _dateController.text = lecture["date"];
+    _courseClassNumController.text = lecture["classRoom"];
   }
 
-  void _submitLectureForm() async {}
+  void _submitLectureForm() async {
+    if (_selectedLecturer == null) {
+      showMsg(context, "Please select a lecturer");
+      return;
+    }
+    if (_lectureFormKey.currentState!.validate()) {
+      EasyLoading.show(status: "Saving Data");
+
+      Lecture newLecture = Lecture(
+        activeClass:
+            false, // automatically the class is not active because lectures are to be attended in the future
+        hasClassEnded: false, // same has active class
+        lecturerName: _selectedLecturer!.fullname,
+        courseTitle: _courseTitleController.text,
+        totalStudents: 0,
+        date: _dateController.text,
+        time: _startTimeController.text,
+        classRoom: _courseClassNumController.text,
+        lecturerId: _selectedLecturer!.id.toString(),
+        studentIds: [],
+      );
+
+      try {
+        // save data
+        Provider.of<LectureProvider>(context, listen: false)
+            .addNewLecture(newLecture);
+
+        _errMsg = "Data Saved";
+        showMsg(context, _errMsg);
+
+        Navigator.pop(context);
+        EasyLoading.dismiss();
+      } catch (e) {
+        _errMsg = "Failed to save data";
+
+        EasyLoading.dismiss();
+        showMsg(context, _errMsg);
+      }
+      // } finally {
+      //   EasyLoading.dismiss();
+      //     showMsg(context, _errMsg);
+      // }
+    }
+  }
 
   void _addStudentToClass() {
     context.go(
         '${Dashboard.routeName}${ManageLecture.routeName}${LectureDetailPage.routeName}/${widget.lectureId}${AddStudentToLecture.routeName}',
         extra: widget.lectureId);
   }
-
-  // void _addNewStudewntBottomSheet(BuildContext context) {
-  //   showModalBottomSheet<void>(
-  //     context: context,
-  //     isScrollControlled: true,
-  //     constraints: const BoxConstraints(maxWidth: 480),
-  //     builder: (context) => FutureBuilder(
-  //       future: serviceData.getExploreData(),
-  //       builder: (context, AsyncSnapshot<ExploreData> snapshot) {
-  //         if (snapshot.connectionState == ConnectionState.done) {
-  //           final lectures = snapshot.data?.lectures ?? [];
-  //           final students = snapshot.data?.allStudents ?? [];
-  //
-  //           final selectedLecture =
-  //               getLectureFilter(widget.lectureId!, lectures);
-  //
-  //           final enrolledStudents = selectedLecture!.students;
-  //
-  //           final List<Student> unenrolledStudents = [];
-  //
-  //           for (Student student in students) {
-  //             for (Student lectureStudent in enrolledStudents) {
-  //               if (!enrolledStudents.contains(student)) {
-  //                 unenrolledStudents.add(lectureStudent);
-  //                 print(lectureStudent);
-  //                 print(enrolledStudents.contains(student));
-  //               }
-  //             }
-  //           }
-  //
-  //           return
-  //         } else {
-  //           return Center(
-  //             child: CircularProgressIndicator(),
-  //           );
-  //         }
-  //       },
-  //     ),
-  //   );
-  // }
 }
