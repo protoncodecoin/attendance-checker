@@ -62,6 +62,7 @@ class _ManageLectureState extends State<ManageLecture> {
                 );
               },
               child: Card(
+                color: const Color.fromARGB(255, 255, 243, 207),
                 child: Padding(
                   padding: const EdgeInsets.all(3.0),
                   child: Column(
@@ -71,10 +72,10 @@ class _ManageLectureState extends State<ManageLecture> {
                       CourseInfo(
                           title: "Course Title",
                           value: lecture["courseTitle"]),
-                      const SizedBox(height: 10),
+                      const SizedBox(height: 5),
                       CourseInfo(
                           title: "Lecturer", value: lecture["lecturerName"]),
-                      const SizedBox(height: 10),
+                      // const SizedBox(height: 10),
                       CourseInfo(
                           title: "No. Students",
                           value: lecture['lecturerName'].toString()),

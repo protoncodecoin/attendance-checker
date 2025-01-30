@@ -7,9 +7,16 @@ import '../models/student.dart';
 class DbHelper {
   static final FirebaseFirestore _db = FirebaseFirestore.instance;
   static const String collectionAdmin = "Admins";
+  static const collectionStudentAuth = "StudentAuth";
+
 
   static Future<bool> isAdmin(String uid) async {
     final snapshot = await _db.collection(collectionAdmin).doc(uid).get();
+    return snapshot.exists;
+  }
+
+  static Future<bool> isStudent(String uid) async {
+    final snapshot = await _db.collection(collectionStudentAuth).doc(uid).get();
     return snapshot.exists;
   }
 
@@ -138,4 +145,5 @@ static  Future<void> removeStudentFromLecture(
       },
     );
   }
+
 }

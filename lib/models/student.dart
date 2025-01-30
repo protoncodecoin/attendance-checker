@@ -10,8 +10,9 @@ const String labelFullname = "fullname";
 const String labelLevel = "level";
 const String labelProgrammeOfStudy = "programeOfStudy";
 const String classIds = "lectureIds";
-
 const String labelEmail = "email";
+
+
 
 @unfreezed
 class Student with _$Student {

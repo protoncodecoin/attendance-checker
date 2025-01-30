@@ -47,6 +47,15 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
               ),
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: const Text(
+                    "Login",
+                    style: TextStyle(fontWeight: FontWeight.w800, fontSize: 40),
+                  ),
+                ),
+              ),
               const Icon(
                 Icons.person,
                 size: 100,
@@ -91,8 +100,15 @@ class _LoginPageState extends State<LoginPage> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: ElevatedButton(
-                  onPressed: _authenticate,
-                  child: const Text("Login"),
+                  onPressed: _authenticateStudent,
+                  child: const Text("Login as student"),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: ElevatedButton(
+                  onPressed: _authenticateAdmin,
+                  child: const Text("Login as admin"),
                 ),
               ),
             ],
@@ -109,9 +125,9 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  void _authenticate() async {
+  void _authenticateAdmin() async {
     if (_formKey.currentState!.validate()) {
-      EasyLoading.show(status: "Authenticating");
+      EasyLoading.show(status: "Authenticating as Admin");
 
       final email = _emailController.text;
       final password = _passwordController.text;
@@ -124,14 +140,56 @@ class _LoginPageState extends State<LoginPage> {
           if (context.mounted) {
             context.go(Dashboard.routeName);
           }
-
         } else {
-          // AuthService.logout();
-          // setState(() {
-          //   _errMsg = "Account is not in admin scope";
-          // });
+          AuthService.logout();
+          setState(() {
+            _errMsg = "Account not in admin scope";
+          });
 
-          context.go(UpcomingPage.routeName);
+          if (context.mounted) {
+            context.go(LoginPage.routeName);
+          }
+
+          // context.go(UpcomingPage.routeName);
+        }
+
+        // if (context.mounted)
+      } on FirebaseAuthException catch (e) {
+        EasyLoading.dismiss();
+
+        setState(() {
+          _errMsg = e.message!;
+        });
+      }
+    }
+  }
+
+  void _authenticateStudent() async {
+    if (_formKey.currentState!.validate()) {
+      EasyLoading.show(status: "Authenticating as Student");
+
+      final email = _emailController.text;
+      final password = _passwordController.text;
+
+      try {
+        final status = await AuthService.loginStudent(email, password);
+        EasyLoading.dismiss();
+
+        if (status) {
+          if (context.mounted) {
+            context.go(UpcomingPage.routeName);
+          }
+        } else {
+          AuthService.logout();
+          setState(() {
+            _errMsg = "Account is not in student scope";
+          });
+
+          if (context.mounted) {
+            context.go(LoginPage.routeName);
+          }
+
+          // context.go(UpcomingPage.routeName);
         }
 
         // if (context.mounted)

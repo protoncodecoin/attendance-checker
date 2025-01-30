@@ -13,6 +13,13 @@ class AuthService {
     return DbHelper.isAdmin(credentials.user!.uid);
   }
 
+  static Future<bool> loginStudent(String email, String password) async {
+    final credentials = await _auth.signInWithEmailAndPassword(
+        email: email, password: password);
+
+    return DbHelper.isStudent(credentials.user!.uid);
+  }
+
   static Future<void> logout() {
     return _auth.signOut();
   }

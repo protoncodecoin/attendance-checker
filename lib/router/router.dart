@@ -31,7 +31,6 @@ final goRouter = GoRouter(
     if (AuthService.currentUser == null) {
       return LoginPage.routeName;
     }
-
     return null;
   },
   initialLocation: "/",

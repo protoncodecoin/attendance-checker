@@ -13,21 +13,21 @@ class CourseInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color.fromARGB(255, 255, 243, 207),
+      // color: const Color.fromARGB(255, 255, 243, 207),
       child: Wrap(
         children: [
           Padding(
             padding: const EdgeInsets.all(3.0),
             child: Text(
               title,
-              style: TextStyle(fontWeight: FontWeight.bold),
+              style: TextStyle(fontWeight: FontWeight.w900),
             ),
           ),
           const SizedBox(
             width: 30,
           ),
           Container(
-            color: Colors.amber,
+            // color: Colors.amber,
             child: Padding(
               padding: const EdgeInsets.all(8.0),
               child: Text(

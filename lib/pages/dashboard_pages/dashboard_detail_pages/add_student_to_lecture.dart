@@ -30,16 +30,17 @@ class _AddStudentToLectureState extends State<AddStudentToLecture> {
   Widget build(BuildContext context) {
     List<Student> allStudents =
         Provider.of<StudentProvider>(context, listen: false).studentList;
-    var allStudentsIds = allStudents.map((student)=> student.id).toList();
+    var allStudentsIds = allStudents.map((student) => student.id).toList();
 
-    var sortBy = Provider.of<StudentProvider>(context, listen: false).enrollmentStatus;
-
+    var sortBy =
+        Provider.of<StudentProvider>(context, listen: false).enrollmentStatus;
+    bool hasBeenAdded = sortBy == "enrolled" ? true : false;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text("Add or Remove Students"),
         actions: [
-        // TODO: add sort dialog
+          // TODO: add sort dialog
           IconButton(
             tooltip: "Sort Student Status",
             onPressed: () {
@@ -58,26 +59,38 @@ class _AddStudentToLectureState extends State<AddStudentToLecture> {
                 Map<String, dynamic>? selectedClass = snapshot.data;
 
                 var enrolledStudents = selectedClass!["studentIds"];
-                List<String> enrolledStudents2 = enrolledStudents.cast<String>();
+                List<String> enrolledStudents2 =
+                    enrolledStudents.cast<String>();
 
-               // show the student based on enrollment status
-                var sortBy = Provider.of<StudentProvider>(context, listen: false).enrollmentStatus;
-                List<String?> generalStudents = [];
+                // use the ids from enrolledStudents2 to get the Student objects
+                List<Student> resolvedStudentsObjects = [];
+
+                resolvedStudentsObjects = allStudents
+                    .where((student) => enrolledStudents2.contains(student.id))
+                    .toList();
+
+                // show the student based on enrollment status
+                var generalStudents = [];
                 switch (sortBy) {
                   case "unEnrolled":
-                    // logic to show unenrolled students
-                    var  unEnrolled = allStudentsIds.toSet().difference(enrolledStudents2.toSet());
-                    generalStudents  = unEnrolled.toList();
+                    var enrolledStudentsSet = enrolledStudents2.toSet();
+
+                    generalStudents = allStudents
+                        .toSet()
+                        .where((student) =>
+                            !enrolledStudentsSet.contains(student.id))
+                        .toList();
                     break;
 
                   case "enrolled":
                     // logic to show enrolled students
-                    generalStudents = enrolledStudents2;
+                    generalStudents = resolvedStudentsObjects;
                     break;
 
                   default:
                     showMsg(context, "Something went wrong");
-                    Provider.of<StudentProvider>(context, listen: false).enrollmentStatus = "unEnrolled";
+                    Provider.of<StudentProvider>(context, listen: false)
+                        .enrollmentStatus = "unEnrolled";
                     break;
                 }
 
@@ -87,8 +100,7 @@ class _AddStudentToLectureState extends State<AddStudentToLecture> {
                     padding: const EdgeInsets.all(8.0),
                     child: ListView.separated(
                         itemBuilder: (BuildContext context, int index) {
-                          final student = students[index];
-                          bool hasBeenAdded = false;
+                          final student = generalStudents[index];
 
                           return ListTile(
                             title: Text(student.fullname),
@@ -96,15 +108,15 @@ class _AddStudentToLectureState extends State<AddStudentToLecture> {
                             trailing: IconButton(
                               onPressed: () {
                                 setState(
-                                      () {
+                                  () {
                                     if (sortBy == "enrolled") {
                                       // remove student from class
-                                      print("The logic came here === enrolled");
-                                      provider.removeStudentFromLecture(student.id!, widget.courseId);
+                                      provider.removeStudentFromLecture(
+                                          student.id!, widget.courseId);
                                     } else {
                                       // add student to class
-                                      print("The logic came here === unEnrolled");
-                                      provider.addStudentToLecture(student.id!, widget.courseId);
+                                      provider.addStudentToLecture(
+                                          student.id!, widget.courseId);
                                     }
                                   },
                                 );
@@ -132,66 +144,60 @@ class _AddStudentToLectureState extends State<AddStudentToLecture> {
     );
   }
 
-  /// Take parent data and child data to get difference
-  List<Student> _unenrolledStudents(List<Student> parent, List<Student> child) {
-    var unenrolled = parent.toSet().difference(child.toSet()).toList();
-
-    return unenrolled;
-  }
-
   void _showSortDialog() {
     showDialog(
-      context: context,
-      builder: (context) => Consumer<StudentProvider>(builder: (context, provider, child) => AlertDialog(
-        title: const Text("Sort on Enrollment Status"),
-        actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            icon: Icon(
-              Icons.close,
-              color: Colors.red,
-            ),
-          )
-        ],
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            RadioGroup(
-              value: "enrolled",
-              groupValue: provider.enrollmentStatus,
-              label: "Enrolled",
-              onChanged: (value) {
-                /// TODO: use provider to handle change sort value
-                if (kDebugMode) {
-                  print(value);
-                }
+        context: context,
+        builder: (context) => Consumer<StudentProvider>(
+              builder: (context, provider, child) => AlertDialog(
+                title: const Text("Sort on Enrollment Status"),
+                actions: [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    icon: Icon(
+                      Icons.close,
+                      color: Colors.red,
+                    ),
+                  )
+                ],
+                content: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    RadioGroup(
+                      value: "enrolled",
+                      groupValue: provider.enrollmentStatus,
+                      label: "Enrolled",
+                      onChanged: (value) {
+                        /// TODO: use provider to handle change sort value
+                        if (kDebugMode) {
+                          print(value);
+                        }
 
-                Navigator.of(context).pop();
-                setState(() {
-                  provider.enrollmentStatus = value!;
-                });
-              },
-            ),
-            RadioGroup(
-              value: "unEnrolled",
-              groupValue: provider.enrollmentStatus,
-              label: "UnEnrolled",
-              onChanged: (value) {
-                /// TODO: use provider to handle change sort value
-                if (kDebugMode) {
-                  print(value);
-                }
-                Navigator.of(context).pop();
-                setState(() {
-                  provider.enrollmentStatus = value!;
-                });
-              },
-            )
-          ],
-        ),
-      ),)
-    );
+                        Navigator.of(context).pop();
+                        setState(() {
+                          provider.enrollmentStatus = value!;
+                        });
+                      },
+                    ),
+                    RadioGroup(
+                      value: "unEnrolled",
+                      groupValue: provider.enrollmentStatus,
+                      label: "UnEnrolled",
+                      onChanged: (value) {
+                        /// TODO: use provider to handle change sort value
+                        if (kDebugMode) {
+                          print(value);
+                        }
+                        Navigator.of(context).pop();
+                        setState(() {
+                          provider.enrollmentStatus = value!;
+                        });
+                      },
+                    )
+                  ],
+                ),
+              ),
+            ));
   }
 }
