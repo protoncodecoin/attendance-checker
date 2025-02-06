@@ -22,6 +22,8 @@ Student _$StudentFromJson(Map<String, dynamic> json) {
 mixin _$Student {
   String? get id => throw _privateConstructorUsedError;
   set id(String? value) => throw _privateConstructorUsedError;
+  dynamic get authid => throw _privateConstructorUsedError;
+  set authid(dynamic value) => throw _privateConstructorUsedError;
   String get fullname => throw _privateConstructorUsedError;
   set fullname(String value) => throw _privateConstructorUsedError;
   String get level => throw _privateConstructorUsedError;
@@ -49,6 +51,7 @@ abstract class $StudentCopyWith<$Res> {
   @useResult
   $Res call(
       {String? id,
+      dynamic authid,
       String fullname,
       String level,
       String programeOfStudy,
@@ -72,6 +75,7 @@ class _$StudentCopyWithImpl<$Res, $Val extends Student>
   @override
   $Res call({
     Object? id = freezed,
+    Object? authid = freezed,
     Object? fullname = null,
     Object? level = null,
     Object? programeOfStudy = null,
@@ -83,6 +87,10 @@ class _$StudentCopyWithImpl<$Res, $Val extends Student>
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String?,
+      authid: freezed == authid
+          ? _value.authid
+          : authid // ignore: cast_nullable_to_non_nullable
+              as dynamic,
       fullname: null == fullname
           ? _value.fullname
           : fullname // ignore: cast_nullable_to_non_nullable
@@ -116,6 +124,7 @@ abstract class _$$StudentImplCopyWith<$Res> implements $StudentCopyWith<$Res> {
   @useResult
   $Res call(
       {String? id,
+      dynamic authid,
       String fullname,
       String level,
       String programeOfStudy,
@@ -137,6 +146,7 @@ class __$$StudentImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? id = freezed,
+    Object? authid = freezed,
     Object? fullname = null,
     Object? level = null,
     Object? programeOfStudy = null,
@@ -148,6 +158,7 @@ class __$$StudentImplCopyWithImpl<$Res>
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
               as String?,
+      authid: freezed == authid ? _value.authid! : authid,
       fullname: null == fullname
           ? _value.fullname
           : fullname // ignore: cast_nullable_to_non_nullable
@@ -174,6 +185,7 @@ class __$$StudentImplCopyWithImpl<$Res>
 class _$StudentImpl with DiagnosticableTreeMixin implements _Student {
   _$StudentImpl(
       {this.id,
+      this.authid = "",
       required this.fullname,
       required this.level,
       required this.programeOfStudy,
@@ -185,6 +197,9 @@ class _$StudentImpl with DiagnosticableTreeMixin implements _Student {
 
   @override
   String? id;
+  @override
+  @JsonKey()
+  dynamic authid;
   @override
   String fullname;
   @override
@@ -199,7 +214,7 @@ class _$StudentImpl with DiagnosticableTreeMixin implements _Student {
 
   @override
   String toString({DiagnosticLevel minLevel = DiagnosticLevel.info}) {
-    return 'Student(id: $id, fullname: $fullname, level: $level, programeOfStudy: $programeOfStudy, email: $email, lectureIds: $lectureIds)';
+    return 'Student(id: $id, authid: $authid, fullname: $fullname, level: $level, programeOfStudy: $programeOfStudy, email: $email, lectureIds: $lectureIds)';
   }
 
   @override
@@ -208,6 +223,7 @@ class _$StudentImpl with DiagnosticableTreeMixin implements _Student {
     properties
       ..add(DiagnosticsProperty('type', 'Student'))
       ..add(DiagnosticsProperty('id', id))
+      ..add(DiagnosticsProperty('authid', authid))
       ..add(DiagnosticsProperty('fullname', fullname))
       ..add(DiagnosticsProperty('level', level))
       ..add(DiagnosticsProperty('programeOfStudy', programeOfStudy))
@@ -234,6 +250,7 @@ class _$StudentImpl with DiagnosticableTreeMixin implements _Student {
 abstract class _Student implements Student {
   factory _Student(
       {String? id,
+      dynamic authid,
       required String fullname,
       required String level,
       required String programeOfStudy,
@@ -245,6 +262,9 @@ abstract class _Student implements Student {
   @override
   String? get id;
   set id(String? value);
+  @override
+  dynamic get authid;
+  set authid(dynamic value);
   @override
   String get fullname;
   set fullname(String value);

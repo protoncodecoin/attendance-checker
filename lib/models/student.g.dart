@@ -9,6 +9,7 @@ part of 'student.dart';
 _$StudentImpl _$$StudentImplFromJson(Map<String, dynamic> json) =>
     _$StudentImpl(
       id: json['id'] as String?,
+      authid: json['authid'] ?? "",
       fullname: json['fullname'] as String,
       level: json['level'] as String,
       programeOfStudy: json['programeOfStudy'] as String,
@@ -19,6 +20,7 @@ _$StudentImpl _$$StudentImplFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$$StudentImplToJson(_$StudentImpl instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'authid': instance.authid,
       'fullname': instance.fullname,
       'level': instance.level,
       'programeOfStudy': instance.programeOfStudy,

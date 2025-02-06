@@ -12,31 +12,37 @@ const String labelProgrammeOfStudy = "programeOfStudy";
 const String classIds = "lectureIds";
 const String labelEmail = "email";
 
-
-
 @unfreezed
 class Student with _$Student {
-
   factory Student({
     String? id,
+    @Default("") authid,
     required String fullname,
     required String level,
     required String programeOfStudy,
     required String email,
     @Default(List<String>) lectureIds,
-}) = _Student;
+  }) = _Student;
 
-  factory Student.fromJson(Map<String, dynamic> json) => _$StudentFromJson(json);
+  factory Student.fromJson(Map<String, dynamic> json) =>
+      _$StudentFromJson(json);
 }
+
+///
+///  [Student(id: AmKkXUPJuK78aFbtWoBL,
+///  authid: W83tzyo2i3R5d39UYCDbv65NGqE3,
+///  fullname: Jacob Norway, level: 400,
+///  programeOfStudy: Computer Science,
+///  email: norway@gmail.com,
+///  lectureIds: [zNMmYKbt8t9YeW9XuZo5, DuNAv9Qo7sfQzAwIf8le])]
 
 Student student = Student(
   id: 1.toString(),
   fullname: "James Peter",
   level: "400",
-  programeOfStudy: "Computer Sciencew",
+  programeOfStudy: "Computer Science",
   email: "james@example.com",
   lectureIds: [],
-
 );
 
 List<Student> students = [
@@ -47,7 +53,6 @@ List<Student> students = [
       email: "peter@example.com",
       lectureIds: [],
       programeOfStudy: "Computer Science"),
-
   Student(
       id: '3',
       fullname: "Paul Peter",

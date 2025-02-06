@@ -122,22 +122,7 @@ class LectureInfoCard extends StatelessWidget {
         children: [
           Text("Course Detail"),
           const SizedBox(height: 30),
-          // Wrap(
-          //   spacing: 30,
-          //   children: [
-          //     Text(
-          //       "Course Code",
-          //       style: TextStyle(
-          //           fontWeight: FontWeight.w600, fontSize: 20),
-          //     ),
-          //     Text(
-          //       "cs550",
-          //       style: TextStyle(
-          //           fontWeight: FontWeight.w500, fontSize: 17),
-          //     ),
-          //   ],
-          // ),
-          // Divider(),
+
           BottomSheetLabel(
               leading: "Course Code", trailing: lecture.courseTitle),
           Divider(),
@@ -149,6 +134,7 @@ class LectureInfoCard extends StatelessWidget {
           ),
           BottomSheetButton(
             label: "Sign in",
+            lectureId: lecture.lecturerId,
           )
         ],
       ),
@@ -158,9 +144,11 @@ class LectureInfoCard extends StatelessWidget {
 
 class BottomSheetButton extends StatelessWidget {
   final String label;
+  final String lectureId;
   const BottomSheetButton({
     super.key,
     required this.label,
+    required this.lectureId,
   });
 
   @override
@@ -173,7 +161,7 @@ class BottomSheetButton extends StatelessWidget {
             Navigator.of(context).pop();
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => ScanScreen(),
+                builder: (context) => ScanScreen( lectureId: lectureId,),
               ),
             );
           },

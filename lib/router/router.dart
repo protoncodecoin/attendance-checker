@@ -1,5 +1,6 @@
 // private navigators
 import 'package:attendance_system/pages/dashboard_pages/dashboard_detail_pages/add_student_to_lecture.dart';
+import 'package:attendance_system/screens/scan_verification.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:attendance_system/auth/auth_service.dart';
@@ -47,8 +48,17 @@ final goRouter = GoRouter(
           routes: [
             GoRoute(
               path: UpcomingPage.routeName,
-              pageBuilder: (context, state) =>
-                  NoTransitionPage(child: UpcomingPage()),
+              pageBuilder: (context, state) => NoTransitionPage(
+                child: UpcomingPage(),
+              ),
+              routes: [
+                GoRoute(
+                  path: ScanVerification.routeName,
+                  pageBuilder: (context, state) => NoTransitionPage(
+                    child: ScanVerification(),
+                  ),
+                )
+              ],
             ),
           ],
         ),
@@ -161,7 +171,8 @@ final goRouter = GoRouter(
                 GoRoute(
                     path: AddStudentToLecture.routeName,
                     builder: (context, state) {
-                      final String extra = GoRouterState.of(context).extra! as String;
+                      final String extra =
+                          GoRouterState.of(context).extra! as String;
                       return AddStudentToLecture(courseId: extra);
                     })
               ],

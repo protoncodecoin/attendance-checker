@@ -9,7 +9,6 @@ class DbHelper {
   static const String collectionAdmin = "Admins";
   static const collectionStudentAuth = "StudentAuth";
 
-
   static Future<bool> isAdmin(String uid) async {
     final snapshot = await _db.collection(collectionAdmin).doc(uid).get();
     return snapshot.exists;
@@ -37,6 +36,58 @@ class DbHelper {
 
     return data;
   }
+
+  /// get student profile
+  static Future<List<Student>> getUserProfile(String studentId) async {
+    try {
+      QuerySnapshot querySnapshot = await _db
+          .collection(collectionStudent)
+          .where("authid", isEqualTo: studentId)
+          .get();
+
+      return querySnapshot.docs
+          .map((doc) => Student.fromJson((doc.data() as Map<String, dynamic>)))
+          .toList();
+    } catch (error) {
+      throw Exception("Request Failed: ${error.toString()}");
+    }
+  }
+
+  /// get a list of lecture objects for student
+  static Future<List<Lecture>> getListOfLectures(
+      List<String> lectureIds) async {
+    List<Lecture> lectures = [];
+
+    try {
+      for (int i = 0; i < lectureIds.length; i += 10) {
+        // Firestore wherein method supports max 10 items, so the queries is batched if needed
+        List<String> batch = lectureIds.sublist(
+            i, i + 10 > lectureIds.length ? lectureIds.length : i + 10);
+
+        QuerySnapshot querySnapshot = await _db
+            .collection(collectionLecture)
+            .where("id", whereIn: batch)
+            .get();
+
+        // convert each document into a Lecture object
+        lectures.addAll(querySnapshot.docs.map(
+          (doc) => Lecture.fromJson(doc.data() as Map<String, dynamic>),
+        ));
+      }
+    } catch (error) {
+      throw Exception("Request Failed : ${error.toString()}");
+    }
+
+    return lectures;
+  }
+
+  /// get student lectures
+  // static Future<List<String>> getAllStudentLecture(String studentId) async {
+  //   QuerySnapshot querySnapshot = await _db
+  //       .collection(collectionStudent)
+  //       .where("authid", isEqualTo: studentId)
+  //       .get();
+  // }
 
   /// get All student using async await
   static Future<QuerySnapshot<Map<String, dynamic>>> getStudents() async {
@@ -95,7 +146,7 @@ class DbHelper {
   }
 
   /// Add student to lecture
- static Future<void> assignStudentToLecture(
+  static Future<void> assignStudentToLecture(
       String studentId, String lectureId) async {
     DocumentReference lectureRef =
         _db.collection(collectionLecture).doc(lectureId);
@@ -122,7 +173,7 @@ class DbHelper {
   }
 
   // Remove student from Lecture
-static  Future<void> removeStudentFromLecture(
+  static Future<void> removeStudentFromLecture(
       String studentId, String lectureId) async {
     DocumentReference studentRef =
         _db.collection(collectionStudent).doc(studentId);
@@ -146,4 +197,68 @@ static  Future<void> removeStudentFromLecture(
     );
   }
 
+  /// ensures both student and lecture is updated (added)
+  Future<void> enrollStudentInLecture(
+      String studentId, String lectureId) async {
+    final studentRef = _db.collection(collectionStudent).doc(studentId);
+    final lectureRef = _db.collection("lectures").doc(lectureId);
+
+    await _db.runTransaction((transaction) async {
+      // Get current student and lecture documents
+      DocumentSnapshot studentSnapshot = await transaction.get(studentRef);
+      DocumentSnapshot lectureSnapshot = await transaction.get(lectureRef);
+
+      if (!studentSnapshot.exists || !lectureSnapshot.exists) {
+        throw Exception("Student or Lecture does not exist.");
+      }
+
+      // Update student document
+      List<dynamic> studentLectureIds = studentSnapshot["lectureIds"] ?? [];
+      if (!studentLectureIds.contains(lectureId)) {
+        studentLectureIds.add(lectureId);
+        transaction.update(studentRef, {"lectureIds": studentLectureIds});
+      }
+
+      // Update lecture document
+      List<dynamic> lectureStudentIds = lectureSnapshot["studentIds"] ?? [];
+      if (!lectureStudentIds.contains(studentId)) {
+        lectureStudentIds.add(studentId);
+        transaction.update(lectureRef, {"studentIds": lectureStudentIds});
+      }
+    });
+  }
+
+  /// ensures both student and lecture is updated (removed)
+  Future<void> unEnrollStudentInLecture(
+      String studentId, String lectureId) async {
+    final studentRef = _db.collection(collectionStudent).doc(studentId);
+    final lectureRef = _db.collection(collectionAdmin).doc(lectureId);
+
+    await _db.runTransaction((transactionHandler) async {
+      DocumentSnapshot studentSnapshot =
+          await transactionHandler.get(studentRef);
+      DocumentSnapshot lectureSnapshot =
+          await transactionHandler.get(lectureRef);
+
+      if (!studentSnapshot.exists || !lectureSnapshot.exists) {
+        throw Exception("Student or lecture does not exit");
+      }
+
+      // Update student document
+      List<dynamic> studentLectureIds = studentSnapshot['lectureIds'] ?? [];
+      if (studentLectureIds.contains(lectureId)) {
+        studentLectureIds.remove(lectureId);
+        transactionHandler
+            .update(studentRef, {"lectureIds": studentLectureIds});
+      }
+
+      // Update lecture document
+      List<dynamic> lectureStudentIds = lectureSnapshot['studentIds'] ?? [];
+      if (lectureStudentIds.contains(studentId)) {
+        lectureStudentIds.remove(studentId);
+        transactionHandler
+            .update(lectureRef, {"studentIds": lectureStudentIds});
+      }
+    });
+  }
 }

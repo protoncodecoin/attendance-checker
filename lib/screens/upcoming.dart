@@ -1,12 +1,14 @@
+import 'package:attendance_system/models/models.dart';
+import 'package:attendance_system/provider/student_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:attendance_system/api/mock_student_system_data.dart';
-import 'package:attendance_system/utility/functions.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 import '../auth/auth_service.dart';
 import '../components/lecture_info.dart';
 import '../components/radio_group.dart';
+import '../models/lecture.dart';
 import '../pages/login.dart';
 
 class UpcomingPage extends StatefulWidget {
@@ -21,7 +23,10 @@ class UpcomingPage extends StatefulWidget {
 class _UpcomingPageState extends State<UpcomingPage> {
   String groupValue = "today";
 
-  final mockService = MockStudentSystemData();
+ Future<void> _fetchRelatedData(BuildContext context) async {
+    await Provider.of<StudentProvider>(context, listen: false)
+        .fetchStudentProfile(AuthService.currentUser!.uid);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -55,30 +60,36 @@ class _UpcomingPageState extends State<UpcomingPage> {
         ],
       ),
       body: FutureBuilder(
-        future: mockService.getExploreData(),
-        builder: (context, AsyncSnapshot<ExploreData> snapshot) {
+        future: _fetchRelatedData(context),
+        builder: (context, AsyncSnapshot<void> snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
-            final lectures = snapshot.data?.lectures
-                    ?.where((lecture) => lecture.hasClassEnded == false)
-                    .toList() ??
-                [];
+            return Consumer<StudentProvider>(
+              builder: (context, provider, child) => Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: provider.currentStudentLectures.isEmpty
+                    ? const Center(
+                        child: Text("No Lectures available"),
+                      )
+                    : ListView.builder(
+                        itemCount: provider.currentStudentLectures.length,
+                        itemBuilder: (context, index) {
+                          final lecture =
+                              provider.currentStudentLectures[index];
 
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: ListView.builder(
-                itemCount: lectures.length,
-                itemBuilder: (context, index) {
-                  final lecture = lectures[index];
-
-                  return LectureInfoCard(
-                    lecture: lecture,
-                  );
-                },
+                          return LectureInfoCard(
+                            lecture: lecture,
+                          );
+                        },
+                      ),
               ),
+            );
+          } else if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(
+              child: CircularProgressIndicator(),
             );
           } else {
             return const Center(
-              child: CircularProgressIndicator(),
+              child: Text("Something went wrong"),
             );
           }
         },

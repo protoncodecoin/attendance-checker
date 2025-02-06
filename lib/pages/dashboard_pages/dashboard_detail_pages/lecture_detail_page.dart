@@ -75,6 +75,7 @@ class _LectureDetailPageState extends State<LectureDetailPage> {
     return DateFormat('yyyy-MM-dd').format(pickedDate);
   }
 
+
   String _formatTime(TimeOfDay pickedTime) {
     final hour = pickedTime.hour.toString().padLeft(2, '0');
     final minute = pickedTime.minute.toString().padLeft(2, '0');

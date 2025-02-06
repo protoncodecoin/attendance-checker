@@ -10,6 +10,7 @@ class AuthService {
     final credentials = await _auth.signInWithEmailAndPassword(
         email: email, password: password);
     // return credentials.user != null;
+    // userAuthId = credentials.user!.uid;
     return DbHelper.isAdmin(credentials.user!.uid);
   }
 
