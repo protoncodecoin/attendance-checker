@@ -1,3 +1,4 @@
+import 'package:attendance_system/ML/Recognition.dart';
 import 'package:attendance_system/models/lecture.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -8,6 +9,7 @@ class DbHelper {
   static final FirebaseFirestore _db = FirebaseFirestore.instance;
   static const String collectionAdmin = "Admins";
   static const collectionStudentAuth = "StudentAuth";
+  static String collectionRecognition = "Recognition";
 
   static Future<bool> isAdmin(String uid) async {
     final snapshot = await _db.collection(collectionAdmin).doc(uid).get();
@@ -260,5 +262,48 @@ class DbHelper {
             .update(lectureRef, {"studentIds": lectureStudentIds});
       }
     });
+  }
+
+// Recognition DBHELPER
+
+  static Future<void> addNewRecognition(
+      String email, Recognition recognition) async {
+    try {
+      await _db
+          .collection(collectionRecognition)
+          .doc(email)
+          .set(recognition.toJson());
+    } catch (e) {
+      throw Exception("🥲Something went wrong in db_helper: ${e.toString()}");
+    }
+  }
+
+  // Get student Embedding
+  static Future<Map<String, dynamic>?> getEmbeddings(String email) async {
+    try {
+      final querySnapshot = await _db
+          .collection(collectionRecognition)
+          .where("email", isEqualTo: email)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        return querySnapshot.docs.first.data();
+      } else {
+        return null;
+      }
+    } catch (e) {
+      throw Exception("An error occurred");
+    }
+  }
+
+  // Get all embeddings
+  static Future<QuerySnapshot<Map<String, dynamic>>> getAllEmbedding() async {
+    try {
+      final querySnapShot = await _db.collection(collectionRecognition).get();
+
+      return querySnapShot;
+    } catch (e) {
+      throw Exception("An error occurred while fetching embedding $e");
+    }
   }
 }

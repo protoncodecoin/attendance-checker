@@ -1,4 +1,3 @@
-import 'package:attendance_system/models/models.dart';
 import 'package:attendance_system/provider/student_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -8,7 +7,6 @@ import 'package:provider/provider.dart';
 import '../auth/auth_service.dart';
 import '../components/lecture_info.dart';
 import '../components/radio_group.dart';
-import '../models/lecture.dart';
 import '../pages/login.dart';
 
 class UpcomingPage extends StatefulWidget {
@@ -23,9 +21,11 @@ class UpcomingPage extends StatefulWidget {
 class _UpcomingPageState extends State<UpcomingPage> {
   String groupValue = "today";
 
- Future<void> _fetchRelatedData(BuildContext context) async {
+  Future<void> _fetchRelatedData(BuildContext context) async {
     await Provider.of<StudentProvider>(context, listen: false)
         .fetchStudentProfile(AuthService.currentUser!.uid);
+    print(
+        'this is the current user:=========== ${AuthService.currentUser!.email}');
   }
 
   @override

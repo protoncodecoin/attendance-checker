@@ -1,10 +1,8 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter/foundation.dart';
-import 'package:attendance_system/models/models.dart';
 
 part 'lecture.freezed.dart';
 part 'lecture.g.dart';
-
 
 const String collectionLecture = "Lecture";
 
@@ -71,9 +69,7 @@ class Lecture with _$Lecture {
 
 List<Lecture> lectures = [
   Lecture(
-      studentIds: [
-
-      ],
+      studentIds: [],
       id: '1',
       courseTitle: "CS40",
       lecturerId: 'lecturers[1]',
@@ -83,9 +79,7 @@ List<Lecture> lectures = [
       classRoom: "34-C",
       time: "12:45 pm"),
   Lecture(
-      studentIds: [
-
-      ],
+      studentIds: [],
       id: '2',
       courseTitle: "CS90",
       lecturerId: 'lecturers[2]',
@@ -95,12 +89,10 @@ List<Lecture> lectures = [
       classRoom: "32-C-Aqua",
       time: "12:45 pm"),
   Lecture(
-    studentIds: [
-
-    ],
+    studentIds: [],
     id: '3',
     courseTitle: "CS40",
-    lecturerId:' lecturers[3]',
+    lecturerId: ' lecturers[3]',
     totalStudents: 30,
     lecturerName: "Mr Darko Kwesi",
     date: "09/10/2025",
@@ -108,9 +100,7 @@ List<Lecture> lectures = [
     time: "12:45 pm",
   ),
   Lecture(
-      studentIds: [
-
-      ],
+      studentIds: [],
       id: '4',
       hasClassEnded: true,
       lecturerId: 'lecturers[1]',
@@ -121,9 +111,7 @@ List<Lecture> lectures = [
       date: "19/10/2024",
       time: "12:45 pm"),
   Lecture(
-      studentIds: [
-
-      ],
+      studentIds: [],
       id: '5',
       hasClassEnded: true,
       courseTitle: "CS30",
@@ -134,21 +122,17 @@ List<Lecture> lectures = [
       date: "07/10/2024",
       time: "12:45 pm"),
   Lecture(
-      studentIds: [
-
-      ],
+      studentIds: [],
       id: '6',
       courseTitle: "C540",
       totalStudents: 90,
       lecturerName: "Mr Paul Appiah",
-      lecturerId:' lecturers[2]',
+      lecturerId: ' lecturers[2]',
       classRoom: "James Hall",
       date: "25/09/2025",
       time: "12:45 pm"),
   Lecture(
-      studentIds: [
-
-      ],
+      studentIds: [],
       id: '7',
       hasClassEnded: true,
       courseTitle: "CS50",

@@ -1,3 +1,4 @@
+import 'package:attendance_system/pages/face_registration.dart';
 import 'package:flutter/material.dart';
 import 'package:attendance_system/pages/manage_lecture.dart';
 import 'package:attendance_system/pages/manage_lecturer.dart';
@@ -31,5 +32,10 @@ List<DashboardModels> dashboardModelsList = [
     name: "Students",
     icon: Icons.person,
     routeName: '${Dashboard.routeName}${ManageStudent.routeName}',
+  ),
+  DashboardModels(
+    name: "Face Registration",
+    icon: Icons.person,
+    routeName: '${Dashboard.routeName}${FaceRegistration.routeName}',
   ),
 ];

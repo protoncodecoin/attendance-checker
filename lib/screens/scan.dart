@@ -1,10 +1,10 @@
+import 'package:attendance_system/auth/auth_service.dart';
 import 'package:attendance_system/models/models.dart';
 import 'package:attendance_system/provider/student_provider.dart';
 import 'package:attendance_system/screens/scan_verification.dart';
 import 'package:attendance_system/utility/query_methods.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../utility/date_utility.dart';
@@ -24,6 +24,9 @@ class _ScanScreenState extends State<ScanScreen> {
   void initState() {
     selectedLecture = getStudentStatusForCourse(widget.lectureId, context);
 
+    // // Get all embeddings from firebase
+    // Provider.of<StudentProvider>(context, listen: false).getAllEmbeddings();
+
     DateTime convertedClassDate = parseDate(selectedLecture!.date);
     TimeOfDay convertedTIme = parseTime(selectedLecture!.time);
     print("==== selected lecture=======");
@@ -32,6 +35,15 @@ class _ScanScreenState extends State<ScanScreen> {
     print("Current Date: ${DateTime.now()} || $convertedClassDate");
     print(selectedLecture);
     super.initState();
+  }
+
+  @override
+  void didChangeDependencies() {
+// Get all embeddings from firebase
+    // Provider.of<StudentProvider>(context, listen: false).getAllEmbeddings();
+    Provider.of<StudentProvider>(context, listen: false)
+        .fetchEmbeddings(AuthService.currentUser!.email!);
+    super.didChangeDependencies();
   }
 
   @override

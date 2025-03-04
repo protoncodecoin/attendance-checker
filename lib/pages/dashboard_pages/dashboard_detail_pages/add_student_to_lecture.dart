@@ -30,7 +30,6 @@ class _AddStudentToLectureState extends State<AddStudentToLecture> {
   Widget build(BuildContext context) {
     List<Student> allStudents =
         Provider.of<StudentProvider>(context, listen: false).studentList;
-    var allStudentsIds = allStudents.map((student) => student.id).toList();
 
     var sortBy =
         Provider.of<StudentProvider>(context, listen: false).enrollmentStatus;
