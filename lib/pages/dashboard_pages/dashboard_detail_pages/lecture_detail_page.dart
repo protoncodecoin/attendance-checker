@@ -11,7 +11,6 @@ import 'package:attendance_system/provider/lecturer_provider.dart';
 import '../../../api/mock_student_system_data.dart';
 import '../../../models/lecture.dart';
 import '../../../models/lecturer.dart';
-import '../../../models/student.dart';
 import '../../dashboard.dart';
 import '../../manage_lecture.dart';
 
@@ -74,7 +73,6 @@ class _LectureDetailPageState extends State<LectureDetailPage> {
   String _formatDate(DateTime pickedDate) {
     return DateFormat('yyyy-MM-dd').format(pickedDate);
   }
-
 
   String _formatTime(TimeOfDay pickedTime) {
     final hour = pickedTime.hour.toString().padLeft(2, '0');
@@ -152,19 +150,20 @@ class _LectureDetailPageState extends State<LectureDetailPage> {
                     ),
                   ),
 
-                  hasLoaded ?
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Column(
-                      children: [
-                        Text(
-                          "Assigned Lecturer",
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        Text(savedLecturerName),
-                      ],
-                    ),
-                  ) : const SizedBox(),
+                  hasLoaded
+                      ? Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Column(
+                            children: [
+                              Text(
+                                "Assigned Lecturer",
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                              Text(savedLecturerName),
+                            ],
+                          ),
+                        )
+                      : const SizedBox(),
                   Card(
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -328,7 +327,6 @@ class _LectureDetailPageState extends State<LectureDetailPage> {
 
     var lecturer = await Provider.of<LecturerProvider>(context, listen: false)
         .getLecturer(lecture["lecturerId"]);
-
 
     setState(() {
       savedLecturerName = lecturer["fullname"];

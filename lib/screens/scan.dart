@@ -1,138 +1,159 @@
-import 'package:attendance_system/models/models.dart';
-import 'package:attendance_system/provider/student_provider.dart';
-import 'package:attendance_system/screens/scan_verification.dart';
-import 'package:attendance_system/utility/query_methods.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import '../models/student_record.dart';
+import '../provider/student_provider.dart';
+import 'scan_verification.dart';
 
-import '../utility/date_utility.dart';
-
-class ScanScreen extends StatefulWidget {
+class StudentVerificationStatusScreen extends StatelessWidget {
   final String lectureId;
-  const ScanScreen({super.key, required this.lectureId});
 
-  @override
-  State<ScanScreen> createState() => _ScanScreenState();
-}
-
-class _ScanScreenState extends State<ScanScreen> {
-  Lecture? selectedLecture;
-
-  @override
-  void initState() {
-    selectedLecture = getStudentStatusForCourse(widget.lectureId, context);
-
-    DateTime convertedClassDate = parseDate(selectedLecture!.date);
-    TimeOfDay convertedTIme = parseTime(selectedLecture!.time);
-    print("==== selected lecture=======");
-    print(
-        "Current Time: ${TimeOfDay.now()} || $convertedTIme || Raw: ${selectedLecture!.time}");
-    print("Current Date: ${DateTime.now()} || $convertedClassDate");
-    print(selectedLecture);
-    super.initState();
-  }
+  const StudentVerificationStatusScreen({super.key, required this.lectureId});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Sign in to class"),
-      ),
-      body: selectedLecture != null
-          ? Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+      appBar: AppBar(title: Text("My Verification Status")),
+      body: StreamBuilder<StudentRecord?>(
+        stream: Provider.of<StudentProvider>(context, listen: false)
+            .streamCurrentUserVerification(lectureId),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(child: Text("Error: ${snapshot.error}"));
+          }
+          if (!snapshot.hasData) {
+            return Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text("You haven't complete any verification step"),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            context
+                                .go("${ScanVerification.routeName}/$lectureId");
+                          },
+                          child: const Text("Scan Face ID"),
+                        )
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 20.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {},
+                          child: const Text("Scan QR Code"),
+                        )
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            );
+          }
+
+          final student = snapshot.data!;
+
+          return Center(
+            child: Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    "CS401",
-                    style: TextStyle(fontSize: 25, fontWeight: FontWeight.w700),
-                  ),
-                ),
-                Divider(),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 10, 30, 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Date & Time ${widget.lectureId}",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w700,
-                            fontSize: 20,
-                            color: const Color.fromARGB(255, 104, 104, 104)),
-                      ),
-                      Icon(
-                        Icons.verified,
-                        color: Colors.green,
-                      ),
-                    ],
-                  ),
-                ),
-                Divider(),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 10, 30, 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Location",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 20,
-                          color: const Color.fromARGB(255, 104, 104, 104),
+                Card(
+                  margin: EdgeInsets.all(16),
+                  elevation: 4,
+                  child: Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text("Student ID: ${student.studentId}",
+                            style: TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold)),
+                        SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text("Face ID:", style: TextStyle(fontSize: 16)),
+                            Icon(
+                                student.isFaceIdComplete
+                                    ? Icons.check_circle
+                                    : Icons.cancel,
+                                color: student.isFaceIdComplete
+                                    ? Colors.green
+                                    : Colors.red),
+                          ],
                         ),
-                      ),
-                      Icon(
-                        Icons.cancel,
-                        color: Colors.red,
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 10, 30, 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "Face ID",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 20,
-                          color: const Color.fromARGB(255, 104, 104, 104),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text("QR Code:", style: TextStyle(fontSize: 16)),
+                            Icon(
+                                student.isQRCodeComplete
+                                    ? Icons.check_circle
+                                    : Icons.cancel,
+                                color: student.isQRCodeComplete
+                                    ? Colors.green
+                                    : Colors.red),
+                          ],
                         ),
-                      ),
-                      Icon(
-                        Icons.cancel,
-                        color: Colors.red,
-                      ),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(10, 10, 30, 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        "QR Code",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w700,
-                          fontSize: 20,
-                          color: const Color.fromARGB(255, 104, 104, 104),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text("Location:", style: TextStyle(fontSize: 16)),
+                            Icon(
+                                student.isLocationAcurate
+                                    ? Icons.check_circle
+                                    : Icons.cancel,
+                                color: student.isLocationAcurate
+                                    ? Colors.green
+                                    : Colors.red),
+                          ],
                         ),
-                      ),
-                      Icon(
-                        Icons.cancel,
-                        color: Colors.red,
-                      ),
-                    ],
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text("Date & Time:",
+                                style: TextStyle(fontSize: 16)),
+                            Icon(
+                                student.isDateTimeAccurate
+                                    ? Icons.check_circle
+                                    : Icons.cancel,
+                                color: student.isDateTimeAccurate
+                                    ? Colors.green
+                                    : Colors.red),
+                          ],
+                        ),
+                        SizedBox(height: 20),
+                        student.isComplete
+                            ? Text("✅ Verification Completed!",
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.blue))
+                            : Text("⏳ Verification In Progress",
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.orange)),
+                      ],
+                    ),
                   ),
                 ),
-                Divider(),
+                const SizedBox(
+                  height: 20,
+                ),
                 Padding(
                   padding: const EdgeInsets.only(top: 20.0),
                   child: Row(
@@ -140,7 +161,8 @@ class _ScanScreenState extends State<ScanScreen> {
                     children: [
                       ElevatedButton(
                         onPressed: () {
-                          context.go(ScanVerification.routeName);
+                          context
+                              .go("${ScanVerification.routeName}/$lectureId");
                         },
                         child: const Text("Scan Face ID"),
                       )
@@ -160,10 +182,10 @@ class _ScanScreenState extends State<ScanScreen> {
                   ),
                 )
               ],
-            )
-          : Center(
-              child: const Text("Something went wrong"),
             ),
+          );
+        },
+      ),
     );
   }
 }

@@ -115,6 +115,8 @@ class LectureInfoCard extends StatelessWidget {
   }
 
   Widget _buildOngoingLecture(context) {
+    print("from the bottom modal widget ============");
+    print(lecture.id!);
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Column(
@@ -122,7 +124,6 @@ class LectureInfoCard extends StatelessWidget {
         children: [
           Text("Course Detail"),
           const SizedBox(height: 30),
-
           BottomSheetLabel(
               leading: "Course Code", trailing: lecture.courseTitle),
           Divider(),
@@ -134,7 +135,7 @@ class LectureInfoCard extends StatelessWidget {
           ),
           BottomSheetButton(
             label: "Sign in",
-            lectureId: lecture.lecturerId,
+            lectureId: lecture.id!,
           )
         ],
       ),
@@ -153,6 +154,8 @@ class BottomSheetButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print(
+        "lecture id is from the bottom modal displayed================ ${lectureId}");
     return Row(
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
@@ -161,7 +164,9 @@ class BottomSheetButton extends StatelessWidget {
             Navigator.of(context).pop();
             Navigator.of(context).push(
               MaterialPageRoute(
-                builder: (context) => ScanScreen( lectureId: lectureId,),
+                builder: (context) => StudentVerificationStatusScreen(
+                  lectureId: lectureId,
+                ),
               ),
             );
           },

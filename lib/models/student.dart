@@ -28,14 +28,6 @@ class Student with _$Student {
       _$StudentFromJson(json);
 }
 
-///
-///  [Student(id: AmKkXUPJuK78aFbtWoBL,
-///  authid: W83tzyo2i3R5d39UYCDbv65NGqE3,
-///  fullname: Jacob Norway, level: 400,
-///  programeOfStudy: Computer Science,
-///  email: norway@gmail.com,
-///  lectureIds: [zNMmYKbt8t9YeW9XuZo5, DuNAv9Qo7sfQzAwIf8le])]
-
 Student student = Student(
   id: 1.toString(),
   fullname: "James Peter",
