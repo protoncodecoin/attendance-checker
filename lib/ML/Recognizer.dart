@@ -127,7 +127,14 @@ class Recognizer {
 
     // looks for the nearest embedding in the database and returns the pair
     Pair pair = findNearest(outputArray);
-    print("distance= ${pair.distance}");
+    print("============ top =======distance is 👌👌👌 ${pair.distance}");
+
+    if (pair.distance > 1.0) {
+      print("distance is 👌👌👌 ${pair.distance}");
+      pair.email = "Unknown";
+    }
+    print(
+        "distance is 👌👌👌 ${pair.distance} and email ========= ${pair.email}");
 
     return Recognition(pair.email, location, outputArray, pair.distance);
   }

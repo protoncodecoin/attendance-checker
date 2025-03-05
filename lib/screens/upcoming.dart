@@ -24,8 +24,6 @@ class _UpcomingPageState extends State<UpcomingPage> {
   Future<void> _fetchRelatedData(BuildContext context) async {
     await Provider.of<StudentProvider>(context, listen: false)
         .fetchStudentProfile(AuthService.currentUser!.uid);
-    print(
-        'this is the current user:=========== ${AuthService.currentUser!.email}');
   }
 
   @override

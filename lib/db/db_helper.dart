@@ -1,5 +1,8 @@
 import 'package:attendance_system/ML/Recognition.dart';
+import 'package:attendance_system/auth/auth_service.dart';
 import 'package:attendance_system/models/lecture.dart';
+import 'package:attendance_system/models/student_record.dart';
+import 'package:attendance_system/models/verified_lecture_record.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../models/lecturer.dart';
@@ -10,6 +13,7 @@ class DbHelper {
   static const String collectionAdmin = "Admins";
   static const collectionStudentAuth = "StudentAuth";
   static String collectionRecognition = "Recognition";
+  static String collectionVerficationRecords = "VerifiedLectureStudents";
 
   static Future<bool> isAdmin(String uid) async {
     final snapshot = await _db.collection(collectionAdmin).doc(uid).get();
@@ -305,5 +309,113 @@ class DbHelper {
     } catch (e) {
       throw Exception("An error occurred while fetching embedding $e");
     }
+  }
+
+  /// Add new verified record or update the record if it exist
+  static Future<void> updateVerifiedRecord(
+      StudentRecord record, String lectureId) async {
+    try {
+      DocumentReference docRef =
+          _db.collection(collectionVerficationRecords).doc(lectureId);
+
+      DocumentSnapshot docSnap = await docRef.get();
+
+      if (docSnap.exists) {
+        // Get the existing list of verified students
+        List<dynamic> existingRecords = docSnap.get("verifiedStudents") ?? [];
+
+        // Convert to List<VerifidRecords> for comparison
+        List<StudentRecord> verifiedStudents = existingRecords
+            .map((e) => StudentRecord.fromJson(Map<String, dynamic>.from(e)))
+            .toList();
+
+        // Check if the student already has a record
+        int index =
+            verifiedStudents.indexWhere((r) => r.studentId == record.studentId);
+
+        if (index != -1) {
+          // Update the existing record
+          verifiedStudents[index] = record;
+        } else {
+          // Add a new record
+          verifiedStudents.add(record);
+        }
+
+        // Save back to Firestore
+        await docRef.update({
+          "verifiedStudents":
+              verifiedStudents.map((record) => record.toJson()).toList(),
+        });
+      } else {
+        print("--------- I came to else block ----------------");
+        // Create new document if it doesn't exist
+        await docRef.set(VerifiedLectureStudents(lectureId, [record]).toJson());
+      }
+
+      print("✅ Verification record updated successfully!");
+    } catch (e) {
+      print("🥲🥲🥲🥲🥲 An error occurred: ${e.toString()}");
+    }
+  }
+
+  static Future<List<StudentRecord>> getVerifiedStudents(
+      String lectureId) async {
+    try {
+      DocumentSnapshot docSnap = await _db
+          .collection(collectionVerficationRecords)
+          .doc(lectureId)
+          .get();
+
+      if (docSnap.exists) {
+        VerifiedLectureStudents lecture = VerifiedLectureStudents.fromJson(
+            docSnap.data() as Map<String, dynamic>);
+        return lecture.verifiedStudents;
+      }
+    } catch (e) {
+      print("🥲 Error fetching verified students: $e");
+    }
+
+    return [];
+  }
+
+  /// Stream verified students for a lecture
+  // static Stream<List<StudentRecord>> streamVerifiedStudents(String lectureId) {
+  //   return _db
+  //       .collection(collectionVerficationRecords)
+  //       .where('lectureId', isEqualTo: lectureId) // Filter by lecture
+  //       .snapshots()
+  //       .map((snapshot) => snapshot.docs
+  //           .map((doc) => StudentRecord.fromJson(doc.data()))
+  //           .toList());
+  // }
+
+  /// Stream only the logged-in user's verification status for a lecture
+  static Stream<StudentRecord?> streamCurrentUserVerification(
+      String lectureId) {
+    String? userId =
+        AuthService.currentUser?.uid; // Get the logged-in user's ID
+    if (userId == null) {
+      return Stream.value(null); // Return null if no user is logged in
+    }
+
+    return _db
+        .collection(collectionVerficationRecords)
+        .doc(lectureId)
+        .snapshots()
+        .map((docSnap) {
+      if (!docSnap.exists) return null; // Return null if no document exists
+
+      List<dynamic> existingRecords = docSnap.get("verifiedStudents") ?? [];
+      List<StudentRecord> verifiedStudents = existingRecords
+          .map((e) => StudentRecord.fromJson(Map<String, dynamic>.from(e)))
+          .toList();
+
+// Find the record for the current user or return null if not found
+      return verifiedStudents.cast<StudentRecord?>().firstWhere(
+            (record) => record?.studentId == userId,
+            orElse: () =>
+                null, // Use () => null to return a nullable type correctly
+          );
+    });
   }
 }

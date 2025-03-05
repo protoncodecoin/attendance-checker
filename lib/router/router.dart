@@ -54,9 +54,10 @@ final goRouter = GoRouter(
               ),
               routes: [
                 GoRoute(
-                  path: ScanVerification.routeName,
+                  path: '${ScanVerification.routeName}/:lectureId',
                   pageBuilder: (context, state) => NoTransitionPage(
-                    child: ScanVerification(),
+                    child: ScanVerification(
+                        lectureId: state.pathParameters['lectureId']!),
                   ),
                 )
               ],

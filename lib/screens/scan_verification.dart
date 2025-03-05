@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:attendance_system/ML/Recognition.dart';
+import 'package:attendance_system/models/student_record.dart';
 import 'package:attendance_system/provider/student_provider.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,8 @@ import '../components/face_painter.dart';
 
 class ScanVerification extends StatefulWidget {
   static const routeName = "/verification_page";
-  const ScanVerification({super.key});
+  final String lectureId;
+  const ScanVerification({super.key, required this.lectureId});
 
   @override
   State<ScanVerification> createState() => _ScanVerificationState();
@@ -127,7 +129,22 @@ class _ScanVerificationState extends State<ScanVerification> {
 
       // Recognition
       Recognition recognition = recognizer.recognize(croppedFace, boundingBox);
-      print('Recognized faces ' + recognition.email);
+
+      if (recognition.email == AuthService.currentUser!.email) {
+        final studentRecord = StudentRecord(
+            AuthService.currentUser!.uid, true, false, false, false, false);
+        await Provider.of<StudentProvider>(context, listen: false)
+            .addNewVerifiedRecord(studentRecord, widget.lectureId);
+        Navigator.of(context).pop();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Face is not registered.\nTry again"),
+            backgroundColor: Colors.red[400],
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
       // showFaceRegistrationDialogue(
       //     Uint8List.fromList(img.encodeBmp(croppedFace)), recognition);
     }

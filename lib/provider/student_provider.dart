@@ -1,4 +1,7 @@
 import 'package:attendance_system/ML/Recognition.dart';
+import 'package:attendance_system/auth/auth_service.dart';
+import 'package:attendance_system/models/student_record.dart';
+import 'package:attendance_system/models/verified_lecture_record.dart';
 import 'package:flutter/material.dart';
 import 'package:attendance_system/db/db_helper.dart';
 
@@ -11,6 +14,9 @@ class StudentProvider with ChangeNotifier {
   List<Lecture> currentStudentLectures = [];
   String? errorMessage;
   Map<String, Recognition> registered = Map();
+  Map<String, Map<String, dynamic>> curClassVerificationProcess = {};
+  List<StudentRecord> retrievedVerifiedStudents = [];
+  StudentRecord? curVerifiedUser;
 
   String enrollmentStatus = "enrolled";
 
@@ -51,8 +57,9 @@ class StudentProvider with ChangeNotifier {
   Future<void> getListOfLectures(List<String> lectureIds) async {
     try {
       currentStudentLectures = await DbHelper.getListOfLectures(lectureIds);
+      notifyListeners();
     } catch (error) {
-      throw Exception("$error");
+      throw Exception("🥶🥶🥶$error");
     }
 
     // notifyListeners();
@@ -140,5 +147,51 @@ class StudentProvider with ChangeNotifier {
     } catch (e) {
       print("An error occurred 🥲: ${e.toString()}");
     }
+  }
+
+  /// Add to verified lecture records
+  Future<void> addNewVerifiedRecord(
+      StudentRecord record, String lectureId) async {
+    try {
+      await DbHelper.updateVerifiedRecord(record, lectureId);
+    } catch (e) {
+      print("An error occurred👺👺👺 ${e.toString()}");
+    }
+  }
+
+  Future<List<StudentRecord>> getVerifiedStudents(String lectureId) async {
+    print("======== this is the lecture id: ==");
+    print(lectureId);
+    try {
+      List<StudentRecord> verifiedStudents =
+          await DbHelper.getVerifiedStudents(lectureId);
+      retrievedVerifiedStudents = verifiedStudents;
+
+      var verifiedList = verifiedStudents
+          .where((element) => element.studentId == AuthService.currentUser!.uid)
+          .toList();
+
+      if (verifiedList.isNotEmpty) {
+        curVerifiedUser = verifiedList.first;
+        notifyListeners();
+      }
+
+      notifyListeners();
+      return verifiedStudents;
+    } catch (e) {
+      print("🥲 Error fetching verified students: $e");
+    }
+
+    return [];
+  }
+
+  /// Stream verified students for a lecture
+  // Stream<List<StudentRecord>> streamVerifiedStudents(String lectureId) {
+  //   return DbHelper.streamVerifiedStudents(lectureId);
+  // }
+
+  /// Stream the currently logged-in student's verification status for a lecture
+  Stream<StudentRecord?> streamCurrentUserVerification(String lectureId) {
+    return DbHelper.streamCurrentUserVerification(lectureId);
   }
 }
