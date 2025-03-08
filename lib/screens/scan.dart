@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../models/student_record.dart';
 import '../provider/student_provider.dart';
-import '../scan_qr_code.dart';
+import '../pages/scan_qr_code.dart';
 import 'scan_verification.dart';
 
 class StudentVerificationStatusScreen extends StatelessWidget {

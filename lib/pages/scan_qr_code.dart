@@ -6,7 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'package:provider/provider.dart';
 
-import 'utility/constants.dart';
+import '../utility/constants.dart';
 
 class ScanQrCode extends StatefulWidget {
   static const routeName = "/scan_qr_code";

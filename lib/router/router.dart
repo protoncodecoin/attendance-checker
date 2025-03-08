@@ -18,7 +18,7 @@ import 'package:attendance_system/screens/profile.dart';
 
 import '../home.dart';
 import '../pages/login.dart';
-import '../scan_qr_code.dart';
+import '../pages/scan_qr_code.dart';
 import '../screens/upcoming.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
