@@ -18,6 +18,7 @@ import 'package:attendance_system/screens/profile.dart';
 
 import '../home.dart';
 import '../pages/login.dart';
+import '../scan_qr_code.dart';
 import '../screens/upcoming.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -59,6 +60,11 @@ final goRouter = GoRouter(
                     child: ScanVerification(
                         lectureId: state.pathParameters['lectureId']!),
                   ),
+                ),
+                GoRoute(
+                  path: '${ScanQrCode.routeName}/:lectureId',
+                  builder: (context, state) =>
+                      ScanQrCode(lectureId: state.pathParameters['lectureId']!),
                 )
               ],
             ),
@@ -182,7 +188,7 @@ final goRouter = GoRouter(
             GoRoute(
               path: LectureDetailPage.routeName,
               builder: (context, state) => LectureDetailPage(),
-            )
+            ),
           ],
         ),
         GoRoute(

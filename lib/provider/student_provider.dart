@@ -159,6 +159,16 @@ class StudentProvider with ChangeNotifier {
     }
   }
 
+  Future<void> updateFieldVerifiedRecord(
+      fieldKey, fieldValue, studentId, lectureId) async {
+    try {
+      await DbHelper.updateFieldVerifiedRecord(
+          fieldKey, fieldValue, studentId, lectureId);
+    } catch (e) {
+      print("An error occurred👺👺👺 ${e.toString()}");
+    }
+  }
+
   Future<List<StudentRecord>> getVerifiedStudents(String lectureId) async {
     print("======== this is the lecture id: ==");
     print(lectureId);

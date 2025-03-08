@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
 import '../models/student_record.dart';
 import '../provider/student_provider.dart';
+import '../scan_qr_code.dart';
 import 'scan_verification.dart';
 
 class StudentVerificationStatusScreen extends StatelessWidget {
@@ -54,7 +55,9 @@ class StudentVerificationStatusScreen extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            context.go("${ScanQrCode.routeName}/$lectureId");
+                          },
                           child: const Text("Scan QR Code"),
                         )
                       ],
@@ -175,7 +178,9 @@ class StudentVerificationStatusScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       ElevatedButton(
-                        onPressed: () {},
+                        onPressed: () {
+                          context.go("${ScanQrCode.routeName}/$lectureId");
+                        },
                         child: const Text("Scan QR Code"),
                       )
                     ],

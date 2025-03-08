@@ -31,11 +31,11 @@ class StudentRecord {
   factory StudentRecord.fromJson(Map<String, dynamic> json) {
     return StudentRecord(
       json["studentId"] as String,
-      json['isComplete'] as bool,
       json['isFaceIdComplete'] as bool,
       json['isLocationAcurate'] as bool,
       json['isQRCodeComplete'] as bool,
       json['isDateTimeAccurate'] as bool,
+      json['isComplete'] as bool,
     );
   }
 }

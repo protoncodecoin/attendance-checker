@@ -329,6 +329,9 @@ class DbHelper {
             .map((e) => StudentRecord.fromJson(Map<String, dynamic>.from(e)))
             .toList();
 
+        print("======== probing the data sent ===========");
+        print(verifiedStudents);
+
         // Check if the student already has a record
         int index =
             verifiedStudents.indexWhere((r) => r.studentId == record.studentId);
@@ -349,7 +352,67 @@ class DbHelper {
       } else {
         print("--------- I came to else block ----------------");
         // Create new document if it doesn't exist
-        await docRef.set(VerifiedLectureStudents(lectureId, [record]).toJson());
+        final newData = VerifiedLectureStudents(lectureId, [record]).toJson();
+        print(newData);
+        await docRef.set(newData);
+      }
+
+      print("✅ Verification record updated successfully!");
+    } catch (e) {
+      print("🥲🥲🥲🥲🥲 An error occurred: ${e.toString()}");
+    }
+  }
+
+  /// Add new verified record or update the record if it exist
+  static Future<void> updateFieldVerifiedRecord(String fieldKey,
+      bool fieldValue, String studentId, String lectureId) async {
+    try {
+      DocumentReference docRef =
+          _db.collection(collectionVerficationRecords).doc(lectureId);
+
+      DocumentSnapshot docSnap = await docRef.get();
+
+      if (docSnap.exists) {
+        // Get the existing list of verified students
+        List<dynamic> existingRecords = docSnap.get("verifiedStudents") ?? [];
+
+        // Convert to List<VerifidRecords> for comparison
+        List<StudentRecord> verifiedStudents = existingRecords
+            .map((e) => StudentRecord.fromJson(Map<String, dynamic>.from(e)))
+            .toList();
+
+        // Check if the student already has a record
+        int index =
+            verifiedStudents.indexWhere((r) => r.studentId == studentId);
+
+        if (index != -1) {
+          // Update the existing record
+          StudentRecord existingRec = verifiedStudents[index];
+          Map<String, dynamic> convertedRecord = existingRec.toJson();
+          print(
+              "The result before the converted data is :========== $convertedRecord");
+          convertedRecord.update(fieldKey, (value) => fieldValue);
+
+          print(
+              "The resulr of the converted data is:============ $convertedRecord");
+          final updatedRecord = StudentRecord.fromJson(convertedRecord);
+          verifiedStudents[index] = updatedRecord;
+        } else {
+          // Add a new record
+          // verifiedStudents.add(record);
+          throw Exception("Record does not exist");
+        }
+
+        // Save back to Firestore
+        await docRef.update({
+          "verifiedStudents":
+              verifiedStudents.map((record) => record.toJson()).toList(),
+        });
+      } else {
+        print("--------- I came to else block ----------------");
+        // Create new document if it doesn't exist
+        // await docRef.set(VerifiedLectureStudents(lectureId, [record]).toJson());
+        throw Exception("Document does not exist");
       }
 
       print("✅ Verification record updated successfully!");
@@ -411,11 +474,13 @@ class DbHelper {
           .toList();
 
 // Find the record for the current user or return null if not found
-      return verifiedStudents.cast<StudentRecord?>().firstWhere(
+      var result = verifiedStudents.cast<StudentRecord?>().firstWhere(
             (record) => record?.studentId == userId,
             orElse: () =>
                 null, // Use () => null to return a nullable type correctly
           );
+
+      return result;
     });
   }
 }

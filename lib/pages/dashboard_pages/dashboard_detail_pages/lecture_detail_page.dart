@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:attendance_system/provider/lecturer_provider.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 
 import '../../../api/mock_student_system_data.dart';
 import '../../../models/lecture.dart';
@@ -40,6 +41,9 @@ class _LectureDetailPageState extends State<LectureDetailPage> {
   Lecturer? _selectedLecturer;
   bool hasLoaded = false;
   String savedLecturerName = "";
+
+  // hold generated QRCode
+  QrImageView? _qrCode;
 
   @override
   void initState() {
@@ -116,130 +120,159 @@ class _LectureDetailPageState extends State<LectureDetailPage> {
       body: Consumer<LecturerProvider>(
         builder: (context, provider, child) => Padding(
           padding: const EdgeInsets.all(10.0),
-          child: Center(
-            child: Form(
-              key: _lectureFormKey,
-              child: Column(
-                children: [
-                  Center(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Text(
-                        _errMsg,
-                        style: const TextStyle(fontSize: 18, color: Colors.red),
+          child: ListView(children: [
+            Center(
+              child: Form(
+                key: _lectureFormKey,
+                child: Column(
+                  children: [
+                    Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          _errMsg,
+                          style:
+                              const TextStyle(fontSize: 18, color: Colors.red),
+                        ),
                       ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextFormField(
-                      // enabled: false,
-                      controller: _courseTitleController,
-                      keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
-                        filled: true,
-                        prefixIcon: Icon(Icons.person),
-                        labelText: "Course Title",
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Provide a valid Course Name";
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-
-                  hasLoaded
-                      ? Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Column(
-                            children: [
-                              Text(
-                                "Assigned Lecturer",
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
-                              Text(savedLecturerName),
-                            ],
-                          ),
-                        )
-                      : const SizedBox(),
-                  Card(
-                    child: Padding(
+                    Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: DropdownButtonFormField<Lecturer>(
-                        decoration:
-                            const InputDecoration(border: InputBorder.none),
-                        items: provider.lecturers.map(
-                          (item) {
-                            return DropdownMenuItem<Lecturer>(
-                              // enabled: hasLoaded,
-                              value: item,
-                              child: Text(item.fullname),
-                            );
-                          },
-                        ).toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            _selectedLecturer = value;
-                          });
-                        },
-                        value: _selectedLecturer,
-                        hint: const Text("select a Lecturer for the class"),
+                      child: TextFormField(
+                        // enabled: false,
+                        controller: _courseTitleController,
+                        keyboardType: TextInputType.text,
+                        decoration: InputDecoration(
+                          filled: true,
+                          prefixIcon: Icon(Icons.person),
+                          labelText: "Course Title",
+                        ),
                         validator: (value) {
-                          if (value == null) {
-                            return 'Please select a lecturer';
+                          if (value == null || value.isEmpty) {
+                            return "Provide a valid Course Name";
                           }
                           return null;
                         },
                       ),
                     ),
-                  ),
-                  // Padding(
 
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextFormField(
-                      controller: _numStudentsController,
-                      // enabled: false;
-                      decoration: InputDecoration(
-                        filled: true,
-                        prefixIcon: Icon(Icons.numbers),
-                        labelText: "No. Students",
+                    hasLoaded
+                        ? Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              children: [
+                                Text(
+                                  "Assigned Lecturer",
+                                  style:
+                                      Theme.of(context).textTheme.titleMedium,
+                                ),
+                                Text(savedLecturerName),
+                              ],
+                            ),
+                          )
+                        : const SizedBox(),
+                    Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: DropdownButtonFormField<Lecturer>(
+                          decoration:
+                              const InputDecoration(border: InputBorder.none),
+                          items: provider.lecturers.map(
+                            (item) {
+                              return DropdownMenuItem<Lecturer>(
+                                // enabled: hasLoaded,
+                                value: item,
+                                child: Text(item.fullname),
+                              );
+                            },
+                          ).toList(),
+                          onChanged: (value) {
+                            setState(() {
+                              _selectedLecturer = value;
+                            });
+                          },
+                          value: _selectedLecturer,
+                          hint: const Text("select a Lecturer for the class"),
+                          validator: (value) {
+                            if (value == null) {
+                              return 'Please select a lecturer';
+                            }
+                            return null;
+                          },
+                        ),
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Provide a valid number";
-                        }
-                        return null;
-                      },
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextFormField(
-                      // enabled: false,
-                      controller: _courseClassNumController,
-                      keyboardType: TextInputType.text,
-                      decoration: InputDecoration(
-                        filled: true,
-                        prefixIcon: Icon(Icons.house),
-                        labelText: "Class Number",
+                    // Padding(
+
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextFormField(
+                        controller: _numStudentsController,
+                        // enabled: false;
+                        decoration: InputDecoration(
+                          filled: true,
+                          prefixIcon: Icon(Icons.numbers),
+                          labelText: "No. Students",
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Provide a valid number";
+                          }
+                          return null;
+                        },
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Provide a valid Class Number";
-                        }
-                        return null;
-                      },
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: TextFormField(
+                        // enabled: false,
+                        controller: _courseClassNumController,
+                        keyboardType: TextInputType.text,
+                        decoration: InputDecoration(
+                          filled: true,
+                          prefixIcon: Icon(Icons.house),
+                          labelText: "Class Number",
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Provide a valid Class Number";
+                          }
+                          return null;
+                        },
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
+                              padding: const EdgeInsets.all(15),
+                              decoration: BoxDecoration(
+                                color: const Color.fromARGB(255, 224, 224, 224),
+                              ),
+                              child: Row(
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 8.0),
+                                    child: Icon(Icons.timelapse),
+                                  ),
+                                  Text(_startTimeController.text),
+                                ],
+                              )),
+                          ElevatedButton(
+                            onPressed: () => _selectedTime(context),
+                            child: Text("Select Time"),
+                          )
+                        ],
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Container(
                             padding: const EdgeInsets.all(15),
                             decoration: BoxDecoration(
                               color: const Color.fromARGB(255, 224, 224, 224),
@@ -248,60 +281,70 @@ class _LectureDetailPageState extends State<LectureDetailPage> {
                               children: [
                                 Padding(
                                   padding: const EdgeInsets.only(right: 8.0),
-                                  child: Icon(Icons.timelapse),
+                                  child: Icon(Icons.date_range),
                                 ),
-                                Text(_startTimeController.text),
+                                Text(_dateController.text),
                               ],
-                            )),
-                        ElevatedButton(
-                          onPressed: () => _selectedTime(context),
-                          child: Text("Select Time"),
-                        )
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.all(15),
-                          decoration: BoxDecoration(
-                            color: const Color.fromARGB(255, 224, 224, 224),
+                            ),
                           ),
-                          child: Row(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.only(right: 8.0),
-                                child: Icon(Icons.date_range),
-                              ),
-                              Text(_dateController.text),
-                            ],
-                          ),
-                        ),
-                        ElevatedButton(
-                          onPressed: () => _selectedDate(context),
-                          child: Text("Select Date"),
-                        )
-                      ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.only(
-                        top: 20.0, left: 10.0, right: 10.0, bottom: 10.0),
-                    child: ElevatedButton(
-                      onPressed: _submitLectureForm,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: const Text("Save"),
+                          ElevatedButton(
+                            onPressed: () => _selectedDate(context),
+                            child: Text("Select Date"),
+                          )
+                        ],
                       ),
                     ),
-                  )
-                ],
+
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              top: 20.0, left: 10.0, right: 10.0, bottom: 10.0),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              //  '${Dashboard.routeName}${ManageLecture.routeName}${LectureDetailPage.routeName}/${lecture["id"]}'
+                              final data = _generateQRCodeForCourse();
+
+                              if (data != null) {
+                                setState(() {
+                                  _qrCode = data;
+                                });
+                              }
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: const Text("Generate QRCode"),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              top: 20.0, left: 10.0, right: 10.0, bottom: 10.0),
+                          child: ElevatedButton(
+                            onPressed: _submitLectureForm,
+                            child: Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: const Text("Save"),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    if (_qrCode != null) const Text("Generated QRCode"),
+                    Container(
+                      child: _qrCode,
+                    ),
+
+                    const SizedBox(height: 40),
+                  ],
+                ),
               ),
             ),
-          ),
+          ]),
         ),
       ),
       floatingActionButton: FloatingActionButton(
@@ -389,5 +432,31 @@ class _LectureDetailPageState extends State<LectureDetailPage> {
     context.go(
         '${Dashboard.routeName}${ManageLecture.routeName}${LectureDetailPage.routeName}/${widget.lectureId}${AddStudentToLecture.routeName}',
         extra: widget.lectureId);
+  }
+
+  /// Generate the QRCodde for the course
+  QrImageView? _generateQRCodeForCourse() {
+    // check if course title, lecturer, class number and date is populated
+
+    final courseTitle = _courseTitleController.text.trim();
+    final lecturer = _lecturerController.text.trim();
+    final dateForLecture = _dateController.text.trim();
+
+    if (courseTitle.isNotEmpty &&
+        lecturer.isNotEmpty &&
+        dateForLecture.isNotEmpty) {
+      final data = "$courseTitle,$lecturer,$dateForLecture";
+
+      final generatedQrCodeData = QrImageView(
+        data: data,
+        version: QrVersions.auto,
+        size: 320,
+        gapless: false,
+      );
+
+      return generatedQrCodeData;
+    }
+
+    return null;
   }
 }
